@@ -1,0 +1,50 @@
+type: collection.insomnia.rest/5.0
+name: game-rent-api
+meta:
+  id: wrk_7f3ef7ee053f420a9e6b73f8a68df810
+  created: 1743223161569
+  modified: 1743223161569
+collection:
+  - name: Home
+    meta:
+      id: fld_a3042199fe104b8a9b414e795558a3db
+      created: 1743223178049
+      modified: 1743223178049
+      sortKey: -1743223178049
+    children:
+      - url: "{{ _.base_url }}"
+        name: Index
+        meta:
+          id: req_3f2a7ceff08d4599a31b4be33704f795
+          created: 1743223182180
+          modified: 1743223512313
+          isPrivate: false
+          sortKey: -1743223182180
+        method: GET
+        parameters:
+          - id: pair_47266d0325d2481e925fecca03fb4db5
+            disabled: false
+        headers:
+          - name: User-Agent
+            value: insomnia/11.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_cc250db682ef53ffcc7a2a306760ee23691e1389
+    created: 1743223161574
+    modified: 1743223161574
+environments:
+  name: Base Environment
+  meta:
+    id: env_cc250db682ef53ffcc7a2a306760ee23691e1389
+    created: 1743223161572
+    modified: 1743223161572
+    isPrivate: false
