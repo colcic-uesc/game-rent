@@ -1,6 +1,6 @@
 class HomeController {
    index(req, res) {
-      return res.json({ message: 'Welcome to the Game Rent API' });
+      return res.json({ message: "Welcome to the Game Rent API" });
    }
 
    show(req, res) {
