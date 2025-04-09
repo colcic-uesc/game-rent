@@ -14,7 +14,6 @@ export default defineConfig([
       rules: {
          "no-unused-vars": ["error", { argsIgnorePattern: "next" }],
          "no-undef": "error",
-         "arrow-body-style": ["error", "as-needed"],
          "no-console": ["error", { allow: ["warn", "error", "log"] }],
          "no-alert": "warn",
          "no-duplicate-imports": "error",
