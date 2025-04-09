@@ -1,10 +1,8 @@
-import app from "./app.js";
+import app from "./app";
 
-const PORT = 3000;
-
-app.listen(PORT, (error) => {
+app.listen(process.env.PORT, (error) => {
    if (error) {
       return console.error(error);
    }
-   console.log(`Server is running on http://localhost:${PORT}`);
+   console.log(`Server is running on http://localhost:${process.env.PORT}`);
 });
