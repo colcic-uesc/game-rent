@@ -1,9 +1,12 @@
 import { Router } from "express";
-
-const routes = Router();
+// import multer from "multer";
+// import multerConfig from "./config/multer";
 
 import HomeController from "./app/controllers/HomeController";
 import UsersController from "./app/controllers/UsersController";
+
+const routes = Router();
+// const upload = multer(multerConfig);
 
 // Home
 routes.get("/", HomeController.index);
