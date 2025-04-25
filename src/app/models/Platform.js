@@ -12,9 +12,9 @@ class Platform extends Model {
       );
    }
 
-   // static associate(models) {
-   //    this.hasMany(models.Game, { foreignKey: "platform_id", as: "games" });
-   // }
+   static associate(models) {
+      this.hasMany(models.Game);
+   }
 }
 
 export default Platform;
