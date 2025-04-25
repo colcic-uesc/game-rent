@@ -1,6 +1,7 @@
 import { Router } from "express";
-// import multer from "multer";
-// import multerConfig from "./config/multer";
+
+import multer from "multer";
+import multerConfig from "./config/multer";
 
 import HomeController from "./app/controllers/HomeController";
 import UsersController from "./app/controllers/UsersController";
@@ -9,7 +10,7 @@ import GenresController from "./app/controllers/GenresController";
 import PlatformsController from "./app/controllers/PlatformsController";
 
 const routes = Router();
-// const upload = multer(multerConfig);
+const upload = multer(multerConfig);
 
 // Home
 routes.get("/", HomeController.index);
@@ -38,7 +39,7 @@ routes.delete("/genres/:id", GenresController.destroy);
 // Games
 routes.get("/games", GamesController.index);
 routes.get("/games/:id", GamesController.show);
-routes.post("/games", GamesController.create);
+routes.post("/games", upload.single("capa_jogo"), GamesController.create);
 routes.put("/games/:id", GamesController.update);
 routes.delete("/games/:id", GamesController.destroy);
 
