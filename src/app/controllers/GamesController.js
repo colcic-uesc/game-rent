@@ -92,25 +92,54 @@ class GamesController {
       return res.json(game);
    }
 
+   isValidFileType(fileName, fileType) {
+      const validFileExtensions = {
+         image: ["jpg", "png", "jpeg", "webp"],
+      };
+      return (
+         fileName &&
+         validFileExtensions[fileType].indexOf(fileName.split(".").pop()) > -1
+      );
+   }
+
    async create(req, res) {
+      const MAX_FILE_SIZE = 2000000; // 2MB
+
       const schema = Yup.object().shape({
-         title: Yup.string().required(),
-         description: Yup.string().required(),
-         price: Yup.number().required(),
-         status: Yup.string().required(),
-         yt_link: Yup.string().required(),
-         capa_jogo: Yup.string().required(),
+         title: Yup.string().required("Title is required"),
+         description: Yup.string().required("Description is required"),
+         price: Yup.number().required("Price is required"),
+         status: Yup.string().required("Status is required"),
+         yt_link: Yup.string().required("YouTube link is required"),
          platform_id: Yup.number().integer().required(),
          genre_id: Yup.number().integer().required(),
       });
 
-      if (!(await schema.isValid(req.body))) {
+      const fileSchema = Yup.object().shape({
+         capa_jogo: Yup.mixed()
+            .required("File is required")
+            .test("is-valid-type", "Not a valid image type", (value) =>
+               isValidFileType(value && value.name.toLowerCase(), "image")
+            )
+            .test(
+               "is-valid-size",
+               "Max allowed size is 2MB",
+               (value) => value && value.size <= MAX_FILE_SIZE
+            ),
+      });
+
+      if (!(await schema.isValid(req.body)) && (!await fileSchema.isValid(req.file))) {
          return res.status(400).json({
             error: "Error on validate schema.",
          });
       }
 
-      const { id, title, createdAt, updatedAt } = await Game.create(req.body);
+      const formData = {
+         ...req.body,
+         capa_jogo: req.file.filename,
+      };
+
+      const { id, title, createdAt, updatedAt } = await Game.create(formData);
 
       return res.status(201).json({ id, title, createdAt, updatedAt });
    }
