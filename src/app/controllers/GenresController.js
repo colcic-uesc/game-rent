@@ -16,7 +16,7 @@ class GenresController {
       const genre = await Genre.findByPk(req.params.id);
 
       if (!genre) {
-         return res.status(404).json();
+         return res.status(404).json({ message: "Gênero não encontrado." });
       }
 
       return res.json(genre);
@@ -24,20 +24,30 @@ class GenresController {
 
    async create(req, res) {
       const schema = Yup.object().shape({
-         name: Yup.string().required(),
+         name: Yup.string().required("Nome do gênero é obrigatório"),
       });
 
       if (!(await schema.isValid(req.body))) {
          return res.status(400).json({
-            error: "Error on validate schema.",
+            error: "Erro na validação dos dados.",
          });
       }
 
-      const { id, name, createdAt, updatedAt } = await Genre.create(
-         req.body
-      );
+      const genre = await Genre.findOne({
+         where: {
+            name: req.body.name,
+         },
+      });
 
-      return res.status(201).json({ id, name, createdAt, updatedAt });
+      if (genre) {
+         return res.status(400).json({
+            error: "Gênero já existe.",
+         });
+      }
+
+      await Genre.create(req.body);
+
+      return res.status(201).json({ message: "Gênero criado com sucesso" });
    }
 
    async update(req, res) {
@@ -54,26 +64,24 @@ class GenresController {
       const genre = await Genre.findByPk(req.params.id);
 
       if (!genre) {
-         return res.status(404).json();
+         return res.status(404).json({ message: "Gênero não encontrado." });
       }
 
-      const { id, name, createdAt, updatedAt } = await genre.update(
-         req.body
-      );
+      await genre.update(req.body);
 
-      return res.status(201).json({ id, name, createdAt, updatedAt });
+      return res.status(201).json({ message: "Gênero atualizado com sucesso" });
    }
 
    async destroy(req, res) {
       const genre = await Genre.findByPk(req.params.id);
 
       if (!genre) {
-         return res.status(404).json();
+         return res.status(404).json({ message: "Gênero não encontrado." });
       }
 
       await genre.destroy();
 
-      return res.json();
+      return res.status(204).json({ message: "Gênero deletado com sucesso" });
    }
 }
 
