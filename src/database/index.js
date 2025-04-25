@@ -3,8 +3,11 @@ import Sequelize from "sequelize";
 import config from "../config/database";
 
 import User from "../app/models/User";
+import Game from "../app/models/Game";
+import Genre from "../app/models/Genre";
+import Platform from "../app/models/Platform";
 
-const models = [User];
+const models = [User, Platform, Genre, Game];
 
 class Database {
    constructor() {

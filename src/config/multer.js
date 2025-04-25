@@ -1,5 +1,5 @@
 import multer from "multer";
-
+import crypto from "crypto";
 import { extname, resolve } from "path";
 
 export default {
@@ -9,7 +9,10 @@ export default {
          crypto.randomBytes(16, (err, res) => {
             if (err) return cb(err);
 
-            cb(null, `${res.toString("hex")}${extname(file.originalname)}`);
+            return cb(
+               null,
+               `${res.toString("hex")}${extname(file.originalname)}`
+            );
          });
       },
    }),
