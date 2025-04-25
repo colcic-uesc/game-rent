@@ -4,6 +4,7 @@ import { Router } from "express";
 
 import HomeController from "./app/controllers/HomeController";
 import UsersController from "./app/controllers/UsersController";
+import GamesController from "./app/controllers/GamesController";
 import GenresController from "./app/controllers/GenresController";
 import PlatformsController from "./app/controllers/PlatformsController";
 
@@ -33,5 +34,12 @@ routes.get("/genres/:id", GenresController.show);
 routes.post("/genres", GenresController.create);
 routes.put("/genres/:id", GenresController.update);
 routes.delete("/genres/:id", GenresController.destroy);
+
+// Games
+routes.get("/games", GamesController.index);
+routes.get("/games/:id", GamesController.show);
+routes.post("/games", GamesController.create);
+routes.put("/games/:id", GamesController.update);
+routes.delete("/games/:id", GamesController.destroy);
 
 export default routes;
