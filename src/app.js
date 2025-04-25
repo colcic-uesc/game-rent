@@ -3,6 +3,9 @@ import "dotenv/config";
 import express from "express";
 import Youch from "youch";
 import "express-async-errors";
+import cors from "cors";
+
+import { specs, swaggerUi } from "./config/swagger";
 
 import routes from "./routes";
 
@@ -20,6 +23,8 @@ class App {
    middlewares() {
       this.server.use(express.json());
       this.server.use(express.urlencoded({ extended: false }));
+      this.server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+      this.server.use(cors());
    }
 
    routes() {
