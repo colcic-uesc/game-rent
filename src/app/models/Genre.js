@@ -1,6 +1,6 @@
 import Sequelize, { Model } from "sequelize";
 
-class Genres extends Model {
+class Genre extends Model {
    static init(sequelize) {
       super.init(
          {
@@ -12,9 +12,9 @@ class Genres extends Model {
       );
    }
 
-   // static associate(models) {
-   //    this.hasMany(models.Game, { foreignKey: "genre_id", as: "games" });
-   // }
+   static associate(models) {
+      this.hasMany(models.Game);
+   }
 }
 
-export default Genres;
+export default Genre;
