@@ -4,6 +4,7 @@ import { Router } from "express";
 
 import HomeController from "./app/controllers/HomeController";
 import UsersController from "./app/controllers/UsersController";
+import GenresController from "./app/controllers/GenresController";
 import PlatformsController from "./app/controllers/PlatformsController";
 
 const routes = Router();
@@ -25,5 +26,12 @@ routes.get("/platforms/:id", PlatformsController.show);
 routes.post("/platforms", PlatformsController.create);
 routes.put("/platforms/:id", PlatformsController.update);
 routes.delete("/platforms/:id", PlatformsController.destroy);
+
+// Genres
+routes.get("/genres", GenresController.index);
+routes.get("/genres/:id", GenresController.show);
+routes.post("/genres", GenresController.create);
+routes.put("/genres/:id", GenresController.update);
+routes.delete("/genres/:id", GenresController.destroy);
 
 export default routes;
