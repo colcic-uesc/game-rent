@@ -9,6 +9,15 @@ class User extends Model {
             email: Sequelize.STRING,
             password: Sequelize.VIRTUAL,
             password_hash: Sequelize.STRING,
+            tipo: Sequelize.ENUM("admin", "cliente"),
+            is_active: {
+               type: Sequelize.BOOLEAN,
+               defaultValue: true,
+            },
+            data_cadastro: {
+               type: Sequelize.DATE,
+               defaultValue: Sequelize.NOW,
+            },
          },
          {
             sequelize,

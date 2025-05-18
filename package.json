@@ -20,7 +20,7 @@
       "url": "https://github.com/cmoliv/game-rent/issues"
    },
    "homepage": "https://github.com/cmoliv/game-rent#readme",
-   "description": "",
+   "description": "O **GameRent** é um sistema de aluguel de jogos sendo em desenvolvido em Node.js. Essa API é um projeto avaliativo desenvolvido para a disciplina **Programação para Aplicações Web** ministrada pelo prof. Helder Almeida.",
    "dependencies": {
       "bcryptjs": "^2.4.3",
       "cors": "^2.8.5",
