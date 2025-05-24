@@ -23,6 +23,8 @@ const upload = multer(multerConfig);
  *     description: Operações relacionadas aos gêneros
  *   - name: Games
  *     description: Operações relacionadas aos jogos
+ *   - name: Users
+ *     description: Operações relacionadas aos usuários
  */
 
 // Home
@@ -39,7 +41,47 @@ const upload = multer(multerConfig);
 routes.get("/", HomeController.index);
 
 // Users
+
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Lista todos os usuários
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Lista de usuários
+ *   post:
+ *     summary: Cria um novo usuário
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: João Silva
+ *               email:
+ *                 type: string
+ *                 example: joao@email.com
+ *               password:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
+ *       400:
+ *         description: Erro de validação ou usuário já existe
+ */
 routes.get("/api/users", UsersController.index);
+routes.post("/api/users", UsersController.store);
 routes.get("/api/users/:id", UsersController.show);
 routes.post("/api/users", UsersController.create);
 routes.put("/api/users/:id", UsersController.update);
