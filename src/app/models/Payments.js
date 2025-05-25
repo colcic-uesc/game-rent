@@ -4,6 +4,11 @@ class Payments extends Model {
    static init(sequelize) {
       super.init(
          {
+            id: {
+               type: DataTypes.INTEGER,
+               autoIncrement: true,
+               primaryKey: true,
+            },
             id_aluguel: {
                type: DataTypes.INTEGER,
                allowNull: false,
@@ -36,6 +41,10 @@ class Payments extends Model {
 
    static associate(models) {
       this.belongsTo(models.Rent, { foreignKey: "id_aluguel", as: "rent" });
+   }
+
+   findAll() {
+      console.log("Fetching all payments");
    }
 }
 

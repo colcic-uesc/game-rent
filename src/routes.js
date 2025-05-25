@@ -413,9 +413,6 @@ routes.delete("/api/games/:id", GamesController.destroy);
  *         description: Lista de pagamentos
  */
 routes.get("/api/payments", PaymentsController.index);
-routes.post("/api/payments", PaymentsController.create);
-routes.get("/api/payments/:id", PaymentsController.show);
-routes.put("/api/payments/:id", PaymentsController.update);
-// routes.delete("/api/payments/:id", PaymentsController.destroy);
+
 
 export default routes;
