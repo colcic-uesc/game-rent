@@ -8,6 +8,7 @@ import UsersController from "./app/controllers/UsersController";
 import GamesController from "./app/controllers/GamesController";
 import GenresController from "./app/controllers/GenresController";
 import PlatformsController from "./app/controllers/PlatformsController";
+import PaymentsController from "./app/controllers/PaymentsController";
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -399,5 +400,22 @@ routes.put(
    GamesController.update
 );
 routes.delete("/api/games/:id", GamesController.destroy);
+
+// Payments
+/**
+ * @swagger
+ * /api/payments:
+ *   get:
+ *     summary: Lista todos os pagamentos
+ *     tags: [Payments]
+ *     responses:
+ *       200:
+ *         description: Lista de pagamentos
+ */
+routes.get("/api/payments", PaymentsController.index);
+routes.post("/api/payments", PaymentsController.create);
+routes.get("/api/payments/:id", PaymentsController.show);
+routes.put("/api/payments/:id", PaymentsController.update);
+// routes.delete("/api/payments/:id", PaymentsController.destroy);
 
 export default routes;

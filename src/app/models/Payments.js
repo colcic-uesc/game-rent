@@ -4,23 +4,39 @@ class Payments extends Model {
    static init(sequelize) {
       super.init(
          {
-            title: DataTypes.STRING,
-            description: DataTypes.STRING,
-            price: DataTypes.FLOAT,
-            status: DataTypes.STRING,
-            yt_link: DataTypes.STRING,
-            capa_jogo: DataTypes.STRING,
-            platform_id: DataTypes.INTEGER,
-            genre_id: DataTypes.INTEGER,
+            id_aluguel: {
+               type: DataTypes.INTEGER,
+               allowNull: false,
+            },
+            valor: {
+               type: DataTypes.DECIMAL(10, 2),
+               allowNull: false,
+            },
+            data_pagamento: {
+               type: DataTypes.DATE,
+               defaultValue: DataTypes.NOW,
+            },
+            metodo: {
+               type: DataTypes.ENUM('pix', 'cartao', 'boleto'),
+               allowNull: false,
+            },
+            status: {
+               type: DataTypes.ENUM('aprovado', 'pendente', 'cancelado'),
+               defaultValue: 'pendente',
+            },
          },
          {
             sequelize,
+            tableName: 'payments',
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
          }
       );
    }
 
    static associate(models) {
-      this.belongsTo(models.Rent, { foreignKey: "fk_aluguel", as: "rent" });
+      this.belongsTo(models.Rent, { foreignKey: "id_aluguel", as: "rent" });
    }
 }
+
 module.exports = Payments;
