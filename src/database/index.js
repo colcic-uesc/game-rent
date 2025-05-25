@@ -1,20 +1,19 @@
 import Sequelize from "sequelize";
 
-import config from "../config/database";
+import { development } from "../config/database";
 
 import User from "../app/models/User";
 import Game from "../app/models/Game";
+import Rent from "../app/models/Rent";
 import Genre from "../app/models/Genre";
 import Platform from "../app/models/Platform";
-import Aluguel from "../app/models/Aluguel";
-import AluguelJogos from "../app/models/AluguelJogos";
+import GameRent from "../app/models/GameRent";
 
-
-const models = [User, Platform, Genre, Game, Aluguel,AluguelJogos];
+const models = [User, Platform, Genre, Game, Rent, GameRent];
 
 class Database {
    constructor() {
-      this.connection = new Sequelize(config);
+      this.connection = new Sequelize(development);
       this.init();
       this.associate();
    }

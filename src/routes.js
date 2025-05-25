@@ -6,9 +6,9 @@ import multerConfig from "./config/multer";
 import HomeController from "./app/controllers/HomeController";
 import UsersController from "./app/controllers/UsersController";
 import GamesController from "./app/controllers/GamesController";
+import RentController from "./app/controllers/RentController";
 import GenresController from "./app/controllers/GenresController";
 import PlatformsController from "./app/controllers/PlatformsController";
-import AluguelController from "./app/controllers/AluguelController";
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -24,6 +24,8 @@ const upload = multer(multerConfig);
  *     description: Operações relacionadas aos gêneros
  *   - name: Games
  *     description: Operações relacionadas aos jogos
+ *   - name: Rents
+ *     description: Operações relacionadas aos alugueis de jogos
  */
 
 // Home
@@ -401,11 +403,81 @@ routes.put(
 );
 routes.delete("/api/games/:id", GamesController.destroy);
 
+// Rents
+/**
+ * @swagger
+ * /api/rents:
+ *   get:
+ *     summary: Lista todos aos alugueis realizados
+ *     tags: [Rents]
+ *     responses:
+ *       200:
+ *         description: Lista de alugueis
+ *   post:
+ *     summary: Registra um novo aluguel
+ *     tags: [Rents]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_usuario
+ *               - jogo_ids
+ *             properties:
+ *               id_usuario:
+ *                 type: number
+ *               jogo_ids:
+ *                 type: array
+ *     responses:
+ *       201:
+ *         description: Aluguel registrado com sucesso
+ *       400:
+ *         description: Erro de validação
+ *       500:
+ *         description: Erro interno do servidor
+ */
+routes.get("/api/rents", RentController.index);
+routes.post("/api/rents", RentController.create);
 
-// rotas para Alugueis
-routes.post("/api/alugueis", AluguelController.store);
-routes.get("/api/alugueis", AluguelController.index);
-routes.get("/api/alugueis/:id", AluguelController.show);
-routes.patch("/api/alugueis/:id/finalizar", AluguelController.finalizar);
+/**
+ * @swagger
+ * /api/rents/{id}:
+ *   get:
+ *     summary: Retorna um registro de aluguel específico
+ *     tags: [Rents]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Informações do aluguel
+ *       404:
+ *         description: Registro de aluguel não encontrado
+ *       500:
+ *         description: Erro interno do servidor
+ *   put:
+ *     summary: Atualiza um registro de aluguel
+ *     tags: [Rents]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: Aluguel atualizado com sucesso
+ *       400:
+ *         description: Erro na validação dos dados
+ *       404:
+ *         description: Registro de aluguel não encontrado
+ */
+routes.get("/api/rents/:id", RentController.show);
+routes.put("/api/rents/:id", RentController.update);
 
 export default routes;
