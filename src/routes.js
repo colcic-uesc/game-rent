@@ -8,6 +8,7 @@ import UsersController from "./app/controllers/UsersController";
 import GamesController from "./app/controllers/GamesController";
 import GenresController from "./app/controllers/GenresController";
 import PlatformsController from "./app/controllers/PlatformsController";
+import AluguelController from "./app/controllers/AluguelController";
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -399,5 +400,12 @@ routes.put(
    GamesController.update
 );
 routes.delete("/api/games/:id", GamesController.destroy);
+
+
+// rotas para Alugueis
+routes.post("/api/alugueis", AluguelController.store);
+routes.get("/api/alugueis", AluguelController.index);
+routes.get("/api/alugueis/:id", AluguelController.show);
+routes.patch("/api/alugueis/:id/finalizar", AluguelController.finalizar);
 
 export default routes;
