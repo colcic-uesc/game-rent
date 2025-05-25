@@ -4,18 +4,23 @@ class PaymentsController {
   // Lista todos os pagamentos
   async index(req, res) {
     try {
-    
+
       const payments = await Payment.findAll({
         order: [['createdAt', 'DESC']],
         attributes: ['id', 'id_aluguel', 'valor', 'data_pagamento', 'metodo', 'status'],
         include: [
           {
-            model: Rent,
-            as: 'rent',
+            model: Aluguel,
+            as: 'aluguel',
             attributes: ['id', 'cliente_id'],
             required: true
           }
         ]
+      });
+
+      return res.json({
+        success: true,
+        data: payments
       });
 
     } catch (error) {
