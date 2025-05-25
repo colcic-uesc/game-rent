@@ -1,16 +1,13 @@
 import * as Yup from "yup";
 
 import Game from "../models/Game";
-import Aluguel from "../models/Aluguel";
-import AluguelJogos from "../models/AluguelJogos";
+import Rent from "../models/Rent";
+import GameRent from "../models/GameRent";
 
 class AluguelController {
    async index(req, res) {
-      const id_usuario = req.params.id;
-
       try {
-         const alugueis = await Aluguel.findAll({
-            where: { id_usuario },
+         const alugueis = await Rent.findAll({
             include: [
                {
                   model: Game,
@@ -24,7 +21,6 @@ class AluguelController {
          return res.json(alugueis);
       } catch (error) {
          return res.status(500).json({
-            error: "Erro ao buscar aluguéis",
             detalhes: error.message,
          });
       }
@@ -32,11 +28,10 @@ class AluguelController {
 
    async show(req, res) {
       const { id } = req.params;
-      const id_usuario = req.userId;
 
       try {
-         const aluguel = await Aluguel.findOne({
-            where: { id, id_usuario },
+         const aluguel = await Rent.findOne({
+            where: { id },
             include: [
                {
                   model: Game,
@@ -54,9 +49,7 @@ class AluguelController {
 
          return res.json(aluguel);
       } catch (error) {
-         return res
-            .status(500)
-            .json({ error: "Erro ao buscar aluguel", detalhes: error.message });
+         return res.status(500).json({ detalhes: error.message });
       }
    }
 
@@ -72,7 +65,7 @@ class AluguelController {
       try {
          const data_aluguel = new Date();
 
-         const aluguel = await Aluguel.create({
+         const aluguel = await Rent.create({
             id_usuario,
             data_aluguel,
             status: "em andamento",
@@ -83,24 +76,21 @@ class AluguelController {
             id_jogo: id,
          }));
 
-         await AluguelJogos.bulkCreate(data);
+         await GameRent.bulkCreate(data);
 
          return res
             .status(201)
             .json({ message: "Aluguel criado com sucesso", aluguel });
       } catch (error) {
-         return res
-            .status(500)
-            .json({ error: "Erro ao criar aluguel", message: error.message });
+         return res.status(500).json({ message: error.message });
       }
    }
 
    async update(req, res) {
       const { id } = req.params;
-      const id_usuario = req.userId;
 
       try {
-         const aluguel = await Aluguel.findOne({ where: { id, id_usuario } });
+         const aluguel = await Rent.findOne({ where: { id } });
 
          if (!aluguel) {
             return res.status(404).json({
@@ -132,8 +122,7 @@ class AluguelController {
          });
       } catch (error) {
          return res.status(500).json({
-            error: "Erro ao finalizar aluguel",
-            detalhes: error.message,
+            message: error.message,
          });
       }
    }
