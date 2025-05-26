@@ -168,7 +168,7 @@ routes.delete("/api/users/:id", UsersController.destroy);
 
 /**
  * @swagger
- * /api/users/{id}/historico:
+ * /api/users/{id}/history:
  *   get:
  *     summary: Retorna o histórico de aluguéis do usuário
  *     tags: [Users]
