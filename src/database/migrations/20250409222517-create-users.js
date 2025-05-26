@@ -34,16 +34,18 @@ module.exports = {
          },
          data_cadastro: {
             type: Sequelize.DATE,
-            allowNull: true,
+            allowNull: false,
+            defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
          },
-
          created_at: {
             type: Sequelize.DATE,
             allowNull: false,
+            defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
          },
          updated_at: {
             type: Sequelize.DATE,
             allowNull: false,
+            defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
          },
       });
    },
