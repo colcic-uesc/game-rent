@@ -82,10 +82,106 @@ routes.get("/", HomeController.index);
  */
 routes.get("/api/users", UsersController.index);
 routes.post("/api/users", UsersController.store);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Retorna os dados de um usuário específico
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário
+ *     responses:
+ *       200:
+ *         description: Dados do usuário encontrados
+ *       404:
+ *         description: Usuário não encontrado
+ */
 routes.get("/api/users/:id", UsersController.show);
-routes.post("/api/users", UsersController.create);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     summary: Atualiza os dados de um usuário
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               oldPassword:
+ *                 type: string
+ *               passwordConfirmation:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado com sucesso
+ *       400:
+ *         description: Erro na validação
+ *       404:
+ *         description: Usuário não encontrado
+ */
 routes.put("/api/users/:id", UsersController.update);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Desativa (soft delete) um usuário
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Usuário desativado com sucesso
+ *       404:
+ *         description: Usuário não encontrado
+ */
 routes.delete("/api/users/:id", UsersController.destroy);
+
+/**
+ * @swagger
+ * /api/users/{id}/historico:
+ *   get:
+ *     summary: Retorna o histórico de aluguéis do usuário
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de aluguéis com jogo e plataforma
+ *       404:
+ *         description: Usuário ou histórico não encontrado
+ */
+routes.get("/api/users/:id/history", UsersController.history);
 
 // Platforms
 
