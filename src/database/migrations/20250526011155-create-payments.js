@@ -19,7 +19,7 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       },
-      valor: {
+      valor: {A
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
       },
