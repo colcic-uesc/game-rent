@@ -493,6 +493,6 @@ routes.put("/api/rents/:id", RentController.update);
  *         description: Lista de pagamentos
  */
 routes.get("/api/payments", PaymentsController.index);
-// routes.post("/api/payments", PaymentsController.create);
+routes.post("/api/payments", PaymentsController.create);
 
 export default routes;

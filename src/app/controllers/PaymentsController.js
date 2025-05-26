@@ -4,13 +4,29 @@ class PaymentsController {
   async index(req, res) {
     try {
       const payments = await Payment.findAll();
-
       return res
          .status(200)
          .json({ message: "Pagamentos listados com sucesso", data: payments });
     } catch (error) {
       return res.status(400).json({
         error: "Erro ao listar pagamentos.",
+        details: error.message,
+      });
+    }
+  }
+
+  // Cria um novo pagamento
+  async create(req, res) {
+    try {
+      const { id_aluguel, valor, data_pagamento, metodo, status } = req.body;
+      console.log("Dados do pagamento:", { id_aluguel, valor, data_pagamento, metodo, status });
+      const payment = await Payment.create({ id_aluguel, valor, data_pagamento, metodo, status });
+      return res
+        .status(201)
+        .json({ message: "Pagamento criado com sucesso", data: payment });
+    } catch (error) {
+      return res.status(400).json({
+        error: "Erro ao criar pagamento.",
         details: error.message,
       });
     }
