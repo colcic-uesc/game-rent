@@ -6,8 +6,9 @@ import User from "../app/models/User";
 import Game from "../app/models/Game";
 import Genre from "../app/models/Genre";
 import Platform from "../app/models/Platform";
+import Rent from "../app/models/Rent";
 
-const models = [User, Platform, Genre, Game];
+const models = [User, Platform, Genre, Game, Rent];
 
 class Database {
    constructor() {
@@ -21,7 +22,7 @@ class Database {
    }
 
    associate() {
-      models.forEach((model) => {
+      Object.values(this.connection.models).forEach((model) => {
          if (model.associate) {
             model.associate(this.connection.models);
          }
