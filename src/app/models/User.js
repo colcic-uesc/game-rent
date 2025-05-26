@@ -36,7 +36,7 @@ class User extends Model {
    }
 
    static associate(models) {
-      this.hasMany(models.Rent, { foreignKey: "user_id", as: "alugueis" });
+      this.hasMany(models.Rent, { foreignKey: "id_usuario", as: "alugueis" });
    }
 
    checkPassword(password) {
