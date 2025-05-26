@@ -3,7 +3,7 @@ import { parseISO } from "date-fns";
 import { Op } from "sequelize";
 
 import User from "../models/User";
-import Aluguel from "../models/Aluguel";
+import Rent from "../models/Rent";
 import Game from "../models/Game";
 import Platform from "../models/Platform";
 
@@ -96,39 +96,36 @@ class UsersController {
       return res.json(data);
    }
 
-  async store(req, res) {
-    const { name, email, password, tipo } = req.body;
+   async store(req, res) {
+      const { name, email, password, tipo } = req.body;
 
-    // 1. Validação simples
-    if (!name || !email || !password || !tipo) {
-      return res.status(400).json({ error: "Todos os campos são obrigatórios" });
-    }
+      if (!name || !email || !password || !tipo) {
+         return res
+            .status(400)
+            .json({ error: "Todos os campos são obrigatórios" });
+      }
 
-    // 2. Verifica se e-mail já está cadastrado
-    const userExists = await User.findOne({ where: { email } });
-    if (userExists) {
-      return res.status(400).json({ error: "E-mail já está em uso" });
-    }
+      const userExists = await User.findOne({ where: { email } });
+      if (userExists) {
+         return res.status(400).json({ error: "E-mail já está em uso" });
+      }
 
-    // 3. Cria o usuário (o hook já criptografa a senha automaticamente)
-    const user = await User.create({
-      name,
-      email,
-      password, // apenas o virtual
-      tipo,
-    });
+      const user = await User.create({
+         name,
+         email,
+         password,
+         tipo,
+      });
 
-    // 4. Retorna dados públicos
-    return res.status(201).json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      tipo: user.tipo,
-      is_active: user.is_active,
-      data_cadastro: user.data_cadastro,
-    });
-  }
-
+      return res.status(201).json({
+         id: user.id,
+         name: user.name,
+         email: user.email,
+         tipo: user.tipo,
+         is_active: user.is_active,
+         data_cadastro: user.data_cadastro,
+      });
+   }
 
    async show(req, res) {
       const user = await User.findByPk(req.params.id, {
@@ -202,8 +199,7 @@ class UsersController {
    async history(req, res) {
       const userId = req.params.id;
 
-      // Busca todos os aluguéis do usuário, incluindo detalhes do jogo e plataforma
-      const alugueis = await Aluguel.findAll({
+      const alugueis = await Rent.findAll({
          where: { user_id: userId },
          include: [
             {
@@ -219,7 +215,13 @@ class UsersController {
                ],
             },
          ],
-         attributes: ["id", "rented_at", "returned_at", "created_at", "updated_at"],
+         attributes: [
+            "id",
+            "rented_at",
+            "returned_at",
+            "created_at",
+            "updated_at",
+         ],
          order: [["rented_at", "DESC"]],
       });
 
