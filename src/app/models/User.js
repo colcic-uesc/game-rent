@@ -1,6 +1,7 @@
 import Sequelize, { Model } from "sequelize";
 import bcrypt from "bcryptjs";
 
+
 class User extends Model {
    static init(sequelize) {
       super.init(
@@ -33,6 +34,11 @@ class User extends Model {
             user.password_hash = await bcrypt.hash(user.password, 8);
          }
       });
+   }
+
+   static associate(models) {
+      //Um usuário pode ter muitos aluguéis
+      this.hasMany(models.Rent, { foreignKey: "user_id", as: "alugueis" });
    }
 
    checkPassword(password) {

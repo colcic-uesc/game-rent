@@ -28,6 +28,9 @@ class Game extends Model {
       });
 
       this.belongsTo(models.Genre, { foreignKey: "genre_id", as: "genre" });
+
+      // Um jogo pode ter muitos aluguéis
+      this.hasMany(models.Rent, { foreignKey: "game_id", as: "alugueis" });
    }
 }
 

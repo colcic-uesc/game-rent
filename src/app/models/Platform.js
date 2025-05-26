@@ -13,7 +13,8 @@ class Platform extends Model {
    }
 
    static associate(models) {
-      this.hasMany(models.Game);
+      // Uma plataforma pode ter muitos jogos
+      this.hasMany(models.Game, { foreignKey: "platform_id", as: "games" });
    }
 }
 
