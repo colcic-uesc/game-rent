@@ -9,6 +9,15 @@ class User extends Model {
             email: Sequelize.STRING,
             password: Sequelize.VIRTUAL,
             password_hash: Sequelize.STRING,
+            tipo: Sequelize.ENUM("admin", "cliente"),
+            is_active: {
+               type: Sequelize.BOOLEAN,
+               defaultValue: true,
+            },
+            data_cadastro: {
+               type: Sequelize.DATE,
+               defaultValue: Sequelize.NOW,
+            },
          },
          {
             sequelize,
@@ -24,6 +33,10 @@ class User extends Model {
             user.password_hash = await bcrypt.hash(user.password, 8);
          }
       });
+   }
+
+   static associate(models) {
+      this.hasMany(models.Rent, { foreignKey: "user_id", as: "alugueis" });
    }
 
    checkPassword(password) {

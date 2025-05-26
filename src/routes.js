@@ -24,6 +24,8 @@ const upload = multer(multerConfig);
  *     description: Operações relacionadas aos gêneros
  *   - name: Games
  *     description: Operações relacionadas aos jogos
+ *   - name: Users
+ *     description: Operações relacionadas aos usuários
  *   - name: Rents
  *     description: Operações relacionadas aos alugueis de jogos
  */
@@ -42,11 +44,147 @@ const upload = multer(multerConfig);
 routes.get("/", HomeController.index);
 
 // Users
+
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Lista todos os usuários
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Lista de usuários
+ *   post:
+ *     summary: Cria um novo usuário
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: João Silva
+ *               email:
+ *                 type: string
+ *                 example: joao@email.com
+ *               password:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
+ *       400:
+ *         description: Erro de validação ou usuário já existe
+ */
 routes.get("/api/users", UsersController.index);
+routes.post("/api/users", UsersController.store);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Retorna os dados de um usuário específico
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário
+ *     responses:
+ *       200:
+ *         description: Dados do usuário encontrados
+ *       404:
+ *         description: Usuário não encontrado
+ */
 routes.get("/api/users/:id", UsersController.show);
-routes.post("/api/users", UsersController.create);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     summary: Atualiza os dados de um usuário
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               oldPassword:
+ *                 type: string
+ *               passwordConfirmation:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado com sucesso
+ *       400:
+ *         description: Erro na validação
+ *       404:
+ *         description: Usuário não encontrado
+ */
 routes.put("/api/users/:id", UsersController.update);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Desativa (soft delete) um usuário
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Usuário desativado com sucesso
+ *       404:
+ *         description: Usuário não encontrado
+ */
 routes.delete("/api/users/:id", UsersController.destroy);
+
+/**
+ * @swagger
+ * /api/users/{id}/historico:
+ *   get:
+ *     summary: Retorna o histórico de aluguéis do usuário
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de aluguéis com jogo e plataforma
+ *       404:
+ *         description: Usuário ou histórico não encontrado
+ */
+routes.get("/api/users/:id/history", UsersController.history);
 
 // Platforms
 

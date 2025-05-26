@@ -23,7 +23,7 @@ class Database {
    }
 
    associate() {
-      models.forEach((model) => {
+      Object.values(this.connection.models).forEach((model) => {
          if (model.associate) {
             model.associate(this.connection.models);
          }

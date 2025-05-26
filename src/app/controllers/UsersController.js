@@ -3,6 +3,9 @@ import { parseISO } from "date-fns";
 import { Op } from "sequelize";
 
 import User from "../models/User";
+import Rent from "../models/Rent";
+import Game from "../models/Game";
+import Platform from "../models/Platform";
 
 class UsersController {
    async index(req, res) {
@@ -93,6 +96,37 @@ class UsersController {
       return res.json(data);
    }
 
+   async store(req, res) {
+      const { name, email, password, tipo } = req.body;
+
+      if (!name || !email || !password || !tipo) {
+         return res
+            .status(400)
+            .json({ error: "Todos os campos são obrigatórios" });
+      }
+
+      const userExists = await User.findOne({ where: { email } });
+      if (userExists) {
+         return res.status(400).json({ error: "E-mail já está em uso" });
+      }
+
+      const user = await User.create({
+         name,
+         email,
+         password,
+         tipo,
+      });
+
+      return res.status(201).json({
+         id: user.id,
+         name: user.name,
+         email: user.email,
+         tipo: user.tipo,
+         is_active: user.is_active,
+         data_cadastro: user.data_cadastro,
+      });
+   }
+
    async show(req, res) {
       const user = await User.findByPk(req.params.id, {
          attributes: { exclude: ["password", "password_hash", "file_id"] },
@@ -103,32 +137,6 @@ class UsersController {
       }
 
       return res.json(user);
-   }
-
-   async create(req, res) {
-      const schema = Yup.object().shape({
-         name: Yup.string().required(),
-         email: Yup.string().email().required(),
-         password: Yup.string().required().min(8),
-         passwordConfirmation: Yup.string().when(
-            "password",
-            (password, field) =>
-               password ? field.required().oneOf([Yup.ref("password")]) : field
-         ),
-      });
-
-      if (!(await schema.isValid(req.body))) {
-         return res.status(400).json({
-            error: "Error on validate schema.",
-         });
-      }
-
-      const { id, name, email, fileId, createdAt, updatedAt } =
-         await User.create(req.body);
-
-      return res
-         .status(201)
-         .json({ id, name, email, fileId, createdAt, updatedAt });
    }
 
    async update(req, res) {
@@ -181,9 +189,43 @@ class UsersController {
          return res.status(404).json();
       }
 
-      await user.destroy();
+      // Soft delete: atualiza is_active para false
+      user.is_active = false;
+      await user.save();
 
-      return res.json();
+      return res.status(204).send();
+   }
+
+   async history(req, res) {
+      const userId = req.params.id;
+
+      const alugueis = await Rent.findAll({
+         where: { user_id: userId },
+         include: [
+            {
+               model: Game,
+               as: "game",
+               attributes: ["id", "title"],
+               include: [
+                  {
+                     model: Platform,
+                     as: "platform",
+                     attributes: ["id", "name"],
+                  },
+               ],
+            },
+         ],
+         attributes: [
+            "id",
+            "rented_at",
+            "returned_at",
+            "created_at",
+            "updated_at",
+         ],
+         order: [["rented_at", "DESC"]],
+      });
+
+      return res.json(alugueis);
    }
 }
 
