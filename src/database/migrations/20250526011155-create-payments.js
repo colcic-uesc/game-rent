@@ -19,7 +19,7 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       },
-      valor: {A
+      valor: {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
       },
@@ -50,7 +50,7 @@ module.exports = {
     });
   },
 
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.dropTable("payments");
   },
 };

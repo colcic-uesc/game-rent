@@ -1,4 +1,4 @@
-const { Model, DataTypes } = require("sequelize");
+import { Model, DataTypes } from "sequelize";
 
 class Payments extends Model {
    static init(sequelize) {
@@ -22,19 +22,19 @@ class Payments extends Model {
                defaultValue: DataTypes.NOW,
             },
             metodo: {
-               type: DataTypes.ENUM('pix', 'cartao', 'boleto'),
+               type: DataTypes.ENUM("pix", "cartao", "boleto"),
                allowNull: false,
             },
             status: {
-               type: DataTypes.ENUM('aprovado', 'pendente', 'cancelado'),
-               defaultValue: 'pendente',
+               type: DataTypes.ENUM("aprovado", "pendente", "cancelado"),
+               defaultValue: "pendente",
             },
          },
          {
             sequelize,
-            tableName: 'payments',
-            createdAt: 'created_at',
-            updatedAt: 'updated_at',
+            tableName: "payments",
+            createdAt: "created_at",
+            updatedAt: "updated_at",
          }
       );
    }
@@ -42,10 +42,6 @@ class Payments extends Model {
    static associate(models) {
       this.belongsTo(models.Rent, { foreignKey: "id_aluguel", as: "rent" });
    }
-
-   findAll() {
-      console.log("Fetching all payments");
-   }
 }
 
-module.exports = Payments;
+export default Payments;

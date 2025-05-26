@@ -8,8 +8,9 @@ import Rent from "../app/models/Rent";
 import Genre from "../app/models/Genre";
 import Platform from "../app/models/Platform";
 import GameRent from "../app/models/GameRent";
+import Payments from "../app/models/Payments";
 
-const models = [User, Platform, Genre, Game, Rent, GameRent];
+const models = [User, Platform, Genre, Game, Rent, GameRent, Payments];
 
 class Database {
    constructor() {

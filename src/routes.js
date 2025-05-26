@@ -404,21 +404,6 @@ routes.put(
 );
 routes.delete("/api/games/:id", GamesController.destroy);
 
-<<<<<<< HEAD
-// Payments
-/**
- * @swagger
- * /api/payments:
- *   get:
- *     summary: Lista todos os pagamentos
- *     tags: [Payments]
- *     responses:
- *       200:
- *         description: Lista de pagamentos
- */
-routes.get("/api/payments", PaymentsController.index);
-
-=======
 // Rents
 /**
  * @swagger
@@ -495,6 +480,19 @@ routes.post("/api/rents", RentController.create);
  */
 routes.get("/api/rents/:id", RentController.show);
 routes.put("/api/rents/:id", RentController.update);
->>>>>>> igor_novo
+
+// Payments
+/**
+ * @swagger
+ * /api/payments:
+ *   get:
+ *     summary: Lista todos os pagamentos
+ *     tags: [Payments]
+ *     responses:
+ *       200:
+ *         description: Lista de pagamentos
+ */
+routes.get("/api/payments", PaymentsController.index);
+// routes.post("/api/payments", PaymentsController.create);
 
 export default routes;

@@ -2,9 +2,8 @@
    "name": "dev-rent",
    "version": "1.0.0",
    "main": "index.js",
-   
    "scripts": {
-      "dev": "nodemon ./src/server.js",
+      "dev": "nodemon --exec sucrase-node ./src/server.js",
       "lint": "eslint",
       "lint:fix": "eslint --fix",
       "prettify": "prettier ./src --write",
