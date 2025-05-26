@@ -199,7 +199,7 @@ class UsersController {
       return res.status(204).send();
    }
 
-   async historico(req, res) {
+   async history(req, res) {
       const userId = req.params.id;
 
       // Busca todos os aluguéis do usuário, incluindo detalhes do jogo e plataforma
