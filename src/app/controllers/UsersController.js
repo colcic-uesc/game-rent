@@ -200,11 +200,11 @@ class UsersController {
       const userId = req.params.id;
 
       const alugueis = await Rent.findAll({
-         where: { user_id: userId },
+         where: { id_usuario: userId },
          include: [
             {
                model: Game,
-               as: "game",
+               as: "jogos",
                attributes: ["id", "title"],
                include: [
                   {
@@ -217,12 +217,12 @@ class UsersController {
          ],
          attributes: [
             "id",
-            "rented_at",
-            "returned_at",
+            "data_aluguel",
+            "data_devolucao",
             "created_at",
             "updated_at",
          ],
-         order: [["rented_at", "DESC"]],
+         order: [["data_aluguel", "DESC"]],
       });
 
       return res.json(alugueis);
