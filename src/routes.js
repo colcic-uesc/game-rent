@@ -494,5 +494,6 @@ routes.put("/api/rents/:id", RentController.update);
  */
 routes.get("/api/payments", PaymentsController.index);
 routes.post("/api/payments", PaymentsController.create);
+routes.get("/api/payments/:id", PaymentsController.show);
 
 export default routes;

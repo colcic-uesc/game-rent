@@ -15,6 +15,23 @@ class PaymentsController {
     }
   }
 
+  // Lista um pagamento específico
+  async show(req, res) {
+    try {
+      const { id } = req.params;
+      const payment = await Payment.findByPk(id);
+      if (!payment) {
+        return res.status(404).json({ error: "Pagamento não encontrado." });
+      }
+      return res.status(200).json({ message: "Pagamento encontrado com sucesso", data: payment });
+    } catch (error) {
+      return res.status(400).json({
+        error: "Erro ao listar pagamento.",
+        details: error.message,
+      });
+    }
+  }
+
   // Cria um novo pagamento
   async create(req, res) {
     try {
