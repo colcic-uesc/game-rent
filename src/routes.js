@@ -3,12 +3,14 @@ import { Router } from "express";
 import multer from "multer";
 import multerConfig from "./config/multer";
 
+import SessionsCotroller from "./app/controllers/SessionsController";
 import HomeController from "./app/controllers/HomeController";
 import UsersController from "./app/controllers/UsersController";
 import GamesController from "./app/controllers/GamesController";
 import RentController from "./app/controllers/RentController";
 import GenresController from "./app/controllers/GenresController";
 import PlatformsController from "./app/controllers/PlatformsController";
+import auth from "./app/middlewares/auth";
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -42,6 +44,39 @@ const upload = multer(multerConfig);
  *         description: Mensagem de boas-vindas
  */
 routes.get("/", HomeController.index);
+
+routes.post("/sessions", SessionsCotroller.create);
+/**
+ * @swagger
+ * /api/sessions:
+ *   post:
+ *     summary: Cria uma nova sessão de usuário (login)
+ *     tags: [Sessions]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: joao@email.com
+ *               password:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: Sessão criada com sucesso
+ *       400:
+ *         description: Credenciais inválidas
+ */
+
+// Auth middleware
+routes.use(auth);
 
 // Users
 
