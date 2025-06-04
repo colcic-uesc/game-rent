@@ -21,18 +21,18 @@ const upload = multer(multerConfig);
  * tags:
  *   - name: Home
  *     description: Rota de boas-vindas
+ *   - name: Auth
+ *     description: Operações relacionadas ao cadastro e autenticação do usuário (login)
+ *   - name: Users
+ *     description: Operações relacionadas aos usuários
  *   - name: Platforms
  *     description: Operações relacionadas às plataformas
  *   - name: Genres
  *     description: Operações relacionadas aos gêneros
  *   - name: Games
  *     description: Operações relacionadas aos jogos
- *   - name: Users
- *     description: Operações relacionadas aos usuários
  *   - name: Rents
  *     description: Operações relacionadas aos alugueis de jogos
- *   - name: Auth
- *     description: Operações relacionadas ao cadastro e autenticação do usuário (login)
  */
 
 // Home
