@@ -3,14 +3,15 @@ import { Router } from "express";
 import multer from "multer";
 import multerConfig from "./config/multer";
 
-import SessionsCotroller from "./app/controllers/SessionsController";
+import auth from "./app/middlewares/auth";
+
 import HomeController from "./app/controllers/HomeController";
+import RentController from "./app/controllers/RentController";
 import UsersController from "./app/controllers/UsersController";
 import GamesController from "./app/controllers/GamesController";
-import RentController from "./app/controllers/RentController";
 import GenresController from "./app/controllers/GenresController";
+import SessionsController from "./app/controllers/SessionsController";
 import PlatformsController from "./app/controllers/PlatformsController";
-import auth from "./app/middlewares/auth";
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -30,6 +31,8 @@ const upload = multer(multerConfig);
  *     description: Operações relacionadas aos usuários
  *   - name: Rents
  *     description: Operações relacionadas aos alugueis de jogos
+ *   - name: Auth
+ *     description: Operações relacionadas ao cadastro e autenticação do usuário (login)
  */
 
 // Home
@@ -45,13 +48,13 @@ const upload = multer(multerConfig);
  */
 routes.get("/", HomeController.index);
 
-routes.post("/sessions", SessionsCotroller.create);
+// Auth
 /**
  * @swagger
- * /api/sessions:
+ * /login:
  *   post:
  *     summary: Cria uma nova sessão de usuário (login)
- *     tags: [Sessions]
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
@@ -64,22 +67,49 @@ routes.post("/sessions", SessionsCotroller.create);
  *             properties:
  *               email:
  *                 type: string
- *                 example: joao@email.com
+ *                 example: joao@gmail.com
  *               password:
  *                 type: string
- *                 example: 123456
+ *                 example: 12345678
  *     responses:
  *       200:
  *         description: Sessão criada com sucesso
  *       400:
  *         description: Credenciais inválidas
  */
+routes.post("/login", SessionsController.create);
 
-// Auth middleware
-routes.use(auth);
+/**
+ * @swagger
+ * /signup:
+ *   post:
+ *     summary: Cria uma nova conta de usuário (cadastro)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: joao@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: 12345678
+ *     responses:
+ *       200:
+ *         description: Conta criada com sucesso
+ *       400:
+ *         description: Erro de validação ou usuário já existe
+ */
+routes.post("/signup", UsersController.store);
 
 // Users
-
 /**
  * @swagger
  * /api/users:
@@ -102,6 +132,7 @@ routes.use(auth);
  *               - name
  *               - email
  *               - password
+ *               - tipo
  *             properties:
  *               name:
  *                 type: string
@@ -111,15 +142,18 @@ routes.use(auth);
  *                 example: joao@email.com
  *               password:
  *                 type: string
- *                 example: 123456
+ *                 example: 12345678
+ *               tipo:
+ *                type: string
+ *                example: cliente
  *     responses:
  *       201:
  *         description: Usuário criado com sucesso
  *       400:
  *         description: Erro de validação ou usuário já existe
  */
-routes.get("/api/users", UsersController.index);
-routes.post("/api/users", UsersController.store);
+routes.get("/api/users", auth, UsersController.index);
+routes.post("/api/users", auth, UsersController.store);
 
 /**
  * @swagger
@@ -140,7 +174,7 @@ routes.post("/api/users", UsersController.store);
  *       404:
  *         description: Usuário não encontrado
  */
-routes.get("/api/users/:id", UsersController.show);
+routes.get("/api/users/:id", auth, UsersController.show);
 
 /**
  * @swagger
@@ -179,7 +213,7 @@ routes.get("/api/users/:id", UsersController.show);
  *       404:
  *         description: Usuário não encontrado
  */
-routes.put("/api/users/:id", UsersController.update);
+routes.put("/api/users/:id", auth, UsersController.update);
 
 /**
  * @swagger
@@ -194,12 +228,12 @@ routes.put("/api/users/:id", UsersController.update);
  *         schema:
  *           type: integer
  *     responses:
- *       200:
+ *       204:
  *         description: Usuário desativado com sucesso
  *       404:
  *         description: Usuário não encontrado
  */
-routes.delete("/api/users/:id", UsersController.destroy);
+routes.delete("/api/users/:id", auth, UsersController.destroy);
 
 /**
  * @swagger
@@ -219,10 +253,9 @@ routes.delete("/api/users/:id", UsersController.destroy);
  *       404:
  *         description: Usuário ou histórico não encontrado
  */
-routes.get("/api/users/:id/history", UsersController.history);
+routes.get("/api/users/:id/history", auth, UsersController.history);
 
 // Platforms
-
 /**
  * @swagger
  * /api/platforms:
@@ -253,8 +286,8 @@ routes.get("/api/users/:id/history", UsersController.history);
  *       400:
  *         description: Erro de validação ou plataforma já existe
  */
-routes.get("/api/platforms", PlatformsController.index);
-routes.post("/api/platforms", PlatformsController.create);
+routes.get("/api/platforms", auth, PlatformsController.index);
+routes.post("/api/platforms", auth, PlatformsController.create);
 
 /**
  * @swagger
@@ -316,9 +349,9 @@ routes.post("/api/platforms", PlatformsController.create);
  *       404:
  *         description: Plataforma não encontrada
  */
-routes.get("/api/platforms/:id", PlatformsController.show);
-routes.put("/api/platforms/:id", PlatformsController.update);
-routes.delete("/api/platforms/:id", PlatformsController.destroy);
+routes.get("/api/platforms/:id", auth, PlatformsController.show);
+routes.put("/api/platforms/:id", auth, PlatformsController.update);
+routes.delete("/api/platforms/:id", auth, PlatformsController.destroy);
 
 // Genres
 /**
@@ -351,8 +384,8 @@ routes.delete("/api/platforms/:id", PlatformsController.destroy);
  *       400:
  *        description: Erro de validação ou gênero já existe
  */
-routes.get("/api/genres", GenresController.index);
-routes.post("/api/genres", GenresController.create);
+routes.get("/api/genres", auth, GenresController.index);
+routes.post("/api/genres", auth, GenresController.create);
 
 /**
  * @swagger
@@ -414,9 +447,9 @@ routes.post("/api/genres", GenresController.create);
  *       404:
  *          description: Gênero não encontrado
  */
-routes.get("/api/genres/:id", GenresController.show);
-routes.put("/api/genres/:id", GenresController.update);
-routes.delete("/api/genres/:id", GenresController.destroy);
+routes.get("/api/genres/:id", auth, GenresController.show);
+routes.put("/api/genres/:id", auth, GenresController.update);
+routes.delete("/api/genres/:id", auth, GenresController.destroy);
 
 // Games
 /**
@@ -477,8 +510,13 @@ routes.delete("/api/genres/:id", GenresController.destroy);
  *       400:
  *         description: Erro de validação ou jogo já cadastrado
  */
-routes.get("/api/games", GamesController.index);
-routes.post("/api/games", upload.single("capa_jogo"), GamesController.create);
+routes.get("/api/games", auth, GamesController.index);
+routes.post(
+   "/api/games",
+   auth,
+   upload.single("capa_jogo"),
+   GamesController.create
+);
 
 /**
  * @swagger
@@ -568,10 +606,11 @@ routes.post("/api/games", upload.single("capa_jogo"), GamesController.create);
  *       404:
  *         description: Jogo não encontrado
  */
-routes.get("/api/games/:id", GamesController.show);
+routes.get("/api/games/:id", auth, GamesController.show);
 routes.put(
    "/api/games/:id",
    upload.single("capa_jogo"),
+   auth,
    GamesController.update
 );
 routes.delete("/api/games/:id", GamesController.destroy);
@@ -611,8 +650,8 @@ routes.delete("/api/games/:id", GamesController.destroy);
  *       500:
  *         description: Erro interno do servidor
  */
-routes.get("/api/rents", RentController.index);
-routes.post("/api/rents", RentController.create);
+routes.get("/api/rents", auth, RentController.index);
+routes.post("/api/rents", auth, RentController.create);
 
 /**
  * @swagger
@@ -650,7 +689,7 @@ routes.post("/api/rents", RentController.create);
  *       404:
  *         description: Registro de aluguel não encontrado
  */
-routes.get("/api/rents/:id", RentController.show);
-routes.put("/api/rents/:id", RentController.update);
+routes.get("/api/rents/:id", auth, RentController.show);
+routes.put("/api/rents/:id", auth, RentController.update);
 
 export default routes;
