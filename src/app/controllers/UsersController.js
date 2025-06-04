@@ -91,8 +91,6 @@ class UsersController {
          offset: limit * page - limit,
       });
 
-      console.log({ userId: req.userId });
-
       return res.json(data);
    }
 
@@ -189,7 +187,6 @@ class UsersController {
          return res.status(404).json();
       }
 
-      // Soft delete: atualiza is_active para false
       user.is_active = false;
       await user.save();
 
