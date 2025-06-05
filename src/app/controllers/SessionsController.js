@@ -15,10 +15,10 @@ class SessionsController {
          return res.status(401).json({ error: "Senha nao Confere" });
       }
 
-      const { id, name } = user;
+      const { id, name, tipo, is_active} = user;
 
-      const token = jwt.sign({ id }, process.env.APP_SECRET, {
-         expiresIn: "7d",
+      const token = jwt.sign({ id, role: tipo, active: is_active }, process.env.APP_SECRET, {
+         expiresIn: "30m",
       });
 
       return res.json({
