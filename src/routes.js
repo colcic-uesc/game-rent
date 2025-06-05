@@ -484,6 +484,13 @@ routes.put("/api/rents/:id", RentController.update);
 // Payments
 /**
  * @swagger
+ * tags:
+ *   name: Payments
+ *   description: Gerenciamento de pagamentos
+ */
+
+/**
+ * @swagger
  * /api/payments:
  *   get:
  *     summary: Lista todos os pagamentos
@@ -491,7 +498,36 @@ routes.put("/api/rents/:id", RentController.update);
  *     responses:
  *       200:
  *         description: Lista de pagamentos
+ *   post:
+ *     summary: Cria um novo pagamento
+ *     tags: [Payments]
+ *     responses:
+ *       201:
+ *         description: Pagamento criado com sucesso
  */
+
+/**
+ * @swagger
+ * /api/payments/{id}:
+ *   get:
+ *     summary: Retorna um pagamento pelo ID
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do pagamento
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Pagamento encontrado
+ *       404:
+ *         description: Pagamento não encontrado
+ * 
+ */
+
+
 routes.get("/api/payments", PaymentsController.index);
 routes.post("/api/payments", PaymentsController.create);
 routes.get("/api/payments/:id", PaymentsController.show);

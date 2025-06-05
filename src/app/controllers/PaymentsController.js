@@ -1,5 +1,7 @@
 import Payment from '../models/Payments';
 import { emailPagamento } from '../../config/apiEmail';
+import sequelize from 'sequelize';
+import { tr } from 'date-fns/locale';
 
 class PaymentsController {
   // Lista todos os pagamentos
@@ -45,14 +47,14 @@ class PaymentsController {
       const payment = await Payment.create({ id_aluguel, valor, metodo, status });
       
 
-      if (status == 'aprovado') {
+      // if (status == 'aprovado') {
         
-      emailPagamento(
-        "Igor",
-        "igoruser07@gmail.com",
-        req.body.valor,
-      );
-      }
+      // emailPagamento(
+      //   "Igor",
+      //   "igoruser07@gmail.com",
+      //   req.body.valor,
+      // );
+      // }
 
 
       return res
@@ -90,22 +92,16 @@ class PaymentsController {
     }
   }
 
-  async delete(req, res) {
+  // Envia um email de simulação de pagamento
+  // (a ser implementado)  
+  async simulaEmail(req, res) {
+    const { pagamentoId } = req.params;
+    const t = await sequelize.Transaction();
+
     try {
-      const { id } = req.params;
-      const payment = await Payment.findByPk(id);
-      if (!payment) {
-        return res.status(404).json({ error: "Pagamento não encontrado." });
-      }
-
-      await payment.destroy();
-
-      return res.status(200).json({ message: "Pagamento deletado com sucesso" });
+      
     } catch (error) {
-      return res.status(400).json({
-        error: "Erro ao deletar pagamento.",
-        details: error.message,
-      });
+      
     }
   }
 }
