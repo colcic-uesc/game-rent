@@ -92,15 +92,24 @@ routes.post("/login", SessionsController.create);
  *           schema:
  *             type: object
  *             required:
+ *               - name
  *               - email
  *               - password
+ *               - tipo
  *             properties:
+ *               name:
+ *                 type: string
+ *                 example: João Silva
  *               email:
  *                 type: string
  *                 example: joao@gmail.com
  *               password:
  *                 type: string
  *                 example: 12345678
+ *               tipo:
+ *                 type: string
+ *                 enum: [admin, cliente]
+ *                 example: admin
  *     responses:
  *       200:
  *         description: Conta criada com sucesso
