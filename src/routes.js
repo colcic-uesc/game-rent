@@ -208,9 +208,9 @@ routes.get("/api/users/:id", auth, UsersController.show);
  *                 type: string
  *               email:
  *                 type: string
- *               password:
- *                 type: string
  *               oldPassword:
+ *                 type: string
+ *               password:
  *                 type: string
  *               passwordConfirmation:
  *                 type: string
