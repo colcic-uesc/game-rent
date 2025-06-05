@@ -13,6 +13,7 @@ import GenresController from "./app/controllers/GenresController";
 import SessionsController from "./app/controllers/SessionsController";
 import PlatformsController from "./app/controllers/PlatformsController";
 import auth, { isClientActive, isAdmin } from './app/middlewares/auth';
+import auth, { logout } from "./app/middlewares/auth";
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -702,5 +703,24 @@ routes.post("/api/rents", auth,isClientActive, RentController.create);
  */
 routes.get("/api/rents/:id", auth,isAdmin, RentController.show);
 routes.put("/api/rents/:id", auth,isAdmin, RentController.update);
+
+routes.post("/logout", logout);
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: Encerra a sessão do usuário (logout)
+ *     tags: [Logout]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout realizado com sucesso
+ *       400:
+ *         description: Token não fornecido
+ *       401:
+ *         description: Token inválido
+ */
+
 
 export default routes;
