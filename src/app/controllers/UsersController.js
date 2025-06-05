@@ -186,46 +186,187 @@ class UsersController {
       const user = await User.findByPk(req.params.id);
 
       if (!user) {
-         return res.status(404).json();
+         return res.status(404).json({ 
+            error: "Usuário não encontrado",
+            message: "O usuário com o ID fornecido não existe"
+         });
       }
 
-      // Soft delete: atualiza is_active para false
-      user.is_active = false;
-      await user.save();
+      // Verifica se o e-mail informado é diferente do atual e já existe no banco
+      if (req.body.email && req.body.email !== user.email) {
+         const userExists = await User.findOne({ where: { email: req.body.email } });
+         if (userExists) {
+            return res.status(400).json({ 
+               error: "E-mail já está em uso",
+               message: "Este e-mail já está sendo utilizado por outro usuário"
+            });
+         }
+      }
 
-      return res.status(204).send();
+      // Verifica se o nome informado corresponde ao nome atual do usuário
+      if (req.body.name && req.body.name !== user.name) {
+         return res.status(400).json({ 
+            error: "Nome não corresponde",
+            message: "O nome informado não corresponde ao nome cadastrado para este usuário"
+         });
+      }
+
+      // Verifica se a senha antiga está correta
+      if (req.body.oldPassword && !(await user.checkPassword(req.body.oldPassword))) {
+         return res.status(401).json({ 
+            error: "Senha atual incorreta",
+            message: "A senha atual informada não confere com a senha cadastrada"
+         });
+      }
+
+      // Verifica se a nova senha não é igual à senha atual
+      if (req.body.password && req.body.oldPassword && (await user.checkPassword(req.body.password))) {
+         return res.status(400).json({ 
+            error: "Nova senha inválida",
+            message: "A nova senha não pode ser igual à senha atual"
+         });
+      }
+
+      try {
+         // Atualiza o usuário
+         const updatedUser = await user.update(req.body);
+
+         return res.status(200).json({
+            success: true,
+            message: "Usuário atualizado com sucesso",
+            user: {
+               id: updatedUser.id,
+               name: updatedUser.name,
+               email: updatedUser.email,
+               tipo: updatedUser.tipo,
+               is_active: updatedUser.is_active,
+               createdAt: updatedUser.createdAt,
+               updatedAt: updatedUser.updatedAt
+            }
+         });
+      } catch (error) {
+         return res.status(500).json({
+            error: "Erro interno do servidor",
+            message: "Ocorreu um erro ao atualizar o usuário. Tente novamente."
+         });
+      }
+   }
+
+   async destroy(req, res) {
+      const user = await User.findByPk(req.params.id);
+
+      if (!user) {
+         return res.status(404).json({
+            error: "Usuário não encontrado",
+            message: "O usuário com o ID fornecido não existe"
+         });
+      }
+
+      // Verifica se o usuário já está desativado
+      if (!user.is_active) {
+         return res.status(400).json({
+            error: "Usuário já desativado",
+            message: "Este usuário já está desativado"
+         });
+      }
+
+      try {
+         // Desativa o usuário ao invés de deletar
+         await user.update({ is_active: false });
+
+         return res.status(200).json({
+            success: true,
+            message: "Usuário desativado com sucesso"
+         });
+      } catch (error) {
+         return res.status(500).json({
+            error: "Erro interno do servidor",
+            message: "Ocorreu um erro ao desativar o usuário. Tente novamente."
+         });
+      }
+   }
+
+   async activate(req, res) {
+      const user = await User.findByPk(req.params.id);
+
+      if (!user) {
+         return res.status(404).json({
+            error: "Usuário não encontrado",
+            message: "O usuário com o ID fornecido não existe"
+         });
+      }
+
+      // Verifica se o usuário já está ativo
+      if (user.is_active) {
+         return res.status(400).json({
+            error: "Usuário já ativo",
+            message: "Este usuário já está ativo"
+         });
+      }
+
+      try {
+         // Reativa o usuário
+         await user.update({ is_active: true });
+
+         return res.status(200).json({
+            success: true,
+            message: "Usuário reativado com sucesso",
+            user: {
+               id: user.id,
+               name: user.name,
+               email: user.email,
+               tipo: user.tipo,
+               is_active: true,
+               createdAt: user.createdAt,
+               updatedAt: user.updatedAt
+            }
+         });
+      } catch (error) {
+         return res.status(500).json({
+            error: "Erro interno do servidor",
+            message: "Ocorreu um erro ao reativar o usuário. Tente novamente."
+         });
+      }
    }
 
    async history(req, res) {
+   try {
       const userId = req.params.id;
 
       const alugueis = await Rent.findAll({
          where: { id_usuario: userId },
          include: [
-            {
-               model: Game,
-               as: "jogos",
-               attributes: ["id", "title"],
-               include: [
-                  {
-                     model: Platform,
-                     as: "platform",
-                     attributes: ["id", "name"],
-                  },
-               ],
-            },
+         {
+            model: Game,
+            as: "jogos",
+            attributes: ["id", "title"],
+            include: [
+               {
+               model: Platform,
+               as: "platform",
+               attributes: ["id", "name"],
+               },
+            ],
+         },
          ],
          attributes: [
-            "id",
-            "data_aluguel",
-            "data_devolucao",
-            "created_at",
-            "updated_at",
+         "id",
+         "data_aluguel",
+         "data_devolucao",
+         "created_at",
+         "updated_at",
          ],
          order: [["data_aluguel", "DESC"]],
       });
 
       return res.json(alugueis);
+   } catch (err) {
+      console.error("Erro no histórico:", err);
+      return res.status(500).json({
+         error: "Erro interno ao buscar histórico",
+         detalhes: err.message,
+      });
+   }
    }
 }
 
