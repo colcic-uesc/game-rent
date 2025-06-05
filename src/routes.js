@@ -119,6 +119,7 @@ routes.get("/api/users/:id", UsersController.show);
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID do usuário a ser atualizado
  *     requestBody:
  *       required: true
  *       content:
@@ -130,19 +131,27 @@ routes.get("/api/users/:id", UsersController.show);
  *                 type: string
  *               email:
  *                 type: string
- *               password:
- *                 type: string
+ *                 format: email
  *               oldPassword:
  *                 type: string
+ *                 minLength: 8
+ *               password:
+ *                 type: string
+ *                 minLength: 8
  *               passwordConfirmation:
  *                 type: string
+ *                 minLength: 8
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso
  *       400:
- *         description: Erro na validação
+ *         description: Erro de validação
+ *       401:
+ *         description: Senha atual incorreta
  *       404:
  *         description: Usuário não encontrado
+ *       500:
+ *         description: Erro interno do servidor
  */
 routes.put("/api/users/:id", UsersController.update);
 
@@ -150,7 +159,7 @@ routes.put("/api/users/:id", UsersController.update);
  * @swagger
  * /api/users/{id}:
  *   delete:
- *     summary: Desativa (soft delete) um usuário
+ *     summary: Desativa um usuário (soft delete)
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -158,17 +167,47 @@ routes.put("/api/users/:id", UsersController.update);
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID do usuário a ser desativado
  *     responses:
  *       200:
  *         description: Usuário desativado com sucesso
+ *       400:
+ *         description: Usuário já desativado
  *       404:
  *         description: Usuário não encontrado
+ *       500:
+ *         description: Erro interno do servidor
  */
-routes.delete("/api/users/:id", UsersController.destroy);
+routes.delete("/api/users/:id", auth, UsersController.destroy);
 
 /**
  * @swagger
- * /api/users/{id}/historico:
+ * /api/users/{id}/activate:
+ *   put:
+ *     summary: Reativa um usuário desativado
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário a ser reativado
+ *     responses:
+ *       200:
+ *         description: Usuário reativado com sucesso
+ *       400:
+ *         description: Usuário já ativo
+ *       404:
+ *         description: Usuário não encontrado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+routes.put("/api/users/:id/activate", auth, UsersController.activate);
+
+/**
+ * @swagger
+ * /api/users/{id}/history:
  *   get:
  *     summary: Retorna o histórico de aluguéis do usuário
  *     tags: [Users]
@@ -566,8 +605,12 @@ routes.delete("/api/games/:id", GamesController.destroy);
  *             properties:
  *               id_usuario:
  *                 type: number
+ *                 example: 1
  *               jogo_ids:
  *                 type: array
+ *                 items:
+ *                   type: number
+ *                 example: [2, 3]
  *     responses:
  *       201:
  *         description: Aluguel registrado com sucesso
