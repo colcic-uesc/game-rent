@@ -95,13 +95,29 @@ class UsersController {
    }
 
    async store(req, res) {
-      const { name, email, password, tipo } = req.body;
+      const schema = Yup.object().shape({
+         name: Yup.string().required("Nome é obrigatório"),
+         email: Yup.string()
+            .email("E-mail inválido")
+            .required("E-mail é obrigatório"),
+         password: Yup.string()
+            .min(8, "A senha deve ter pelo menos 8 caracteres")
+            .required("Senha é obrigatória"),
+         tipo: Yup.string()
+            .oneOf(["admin", "cliente"], "Tipo deve ser 'admin' ou 'cliente'")
+            .required("Tipo é obrigatório"),
+      });
 
-      if (!name || !email || !password || !tipo) {
-         return res
-            .status(400)
-            .json({ error: "Todos os campos são obrigatórios" });
+      try {
+         await schema.validate(req.body, { abortEarly: false });
+      } catch (err) {
+         return res.status(400).json({
+            error: "Erro de validação",
+            messages: err.inner.map((e) => ({ field: e.path, message: e.message })),
+         });
       }
+
+      const { name, email, password, tipo } = req.body;
 
       const userExists = await User.findOne({ where: { email } });
       if (userExists) {
