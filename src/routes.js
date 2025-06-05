@@ -12,6 +12,7 @@ import GamesController from "./app/controllers/GamesController";
 import GenresController from "./app/controllers/GenresController";
 import SessionsController from "./app/controllers/SessionsController";
 import PlatformsController from "./app/controllers/PlatformsController";
+import authMiddleware, { isClientActive, isAdmin } from './app/middlewares/auth';
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -650,8 +651,8 @@ routes.delete("/api/games/:id", GamesController.destroy);
  *       500:
  *         description: Erro interno do servidor
  */
-routes.get("/api/rents", auth, RentController.index);
-routes.post("/api/rents", auth, RentController.create);
+routes.get("/api/rents", authMiddleware,isAdmin, RentController.index); //apenas admin
+routes.post("/api/rents", authMiddleware,isClientActive, RentController.create); //somente cliente ativo
 
 /**
  * @swagger
@@ -689,7 +690,7 @@ routes.post("/api/rents", auth, RentController.create);
  *       404:
  *         description: Registro de aluguel não encontrado
  */
-routes.get("/api/rents/:id", auth, RentController.show);
-routes.put("/api/rents/:id", auth, RentController.update);
+routes.get("/api/rents/:id", authMiddleware,isAdmin, RentController.show); //apenas admin
+routes.put("/api/rents/:id", authMiddleware,isAdmin, RentController.update); //apenas admin
 
 export default routes;
