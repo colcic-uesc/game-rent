@@ -52,9 +52,6 @@ class PaymentsController {
          const schema = Yup.object().shape({
             valor: Yup.number().required("O valor da compra é obrigatório"),
             metodo: Yup.string().required("Método de pagamento é obrigatório"),
-            status: Yup.string().required(
-               "O status do pagamento é obrigatório"
-            ),
          });
 
          if (!(await schema.isValid(req.body))) {
