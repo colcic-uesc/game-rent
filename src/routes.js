@@ -559,4 +559,7 @@ routes.get("/api/payments", PaymentsController.index);
 routes.post("/api/payments", PaymentsController.create);
 routes.get("/api/payments/:id", PaymentsController.show);
 
+routes.get("/api/payments/:pagamentoId/simular-email", PaymentsController.simulaEmail);
+
+
 export default routes;

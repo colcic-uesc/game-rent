@@ -1,7 +1,5 @@
 import Payment from '../models/Payments';
 import { emailPagamento } from '../../config/apiEmail';
-import sequelize from 'sequelize';
-import { tr } from 'date-fns/locale';
 
 class PaymentsController {
   // Lista todos os pagamentos
@@ -79,17 +77,33 @@ class PaymentsController {
     }
   }
 
-  // Envia um email de simulação de pagamento
-  // (a ser implementado)
   async simulaEmail(req, res) {
     const { pagamentoId } = req.params;
-    const t = await sequelize.Transaction();
+    const { nome, email } = req.body;
+
+    if (!nome || !email) {
+      return res.status(400).json({ error: "Nome e email são obrigatórios." });
+    }
 
     try {
+      const pagamento = await Payment.findByPk(pagamentoId);
+
+      if (!pagamento) {
+        return res.status(404).json({ error: 'Pagamento não encontrado.' });
+      }
+
+      await emailPagamento(nome, email, pagamento.valor);
+
+      return res.status(200).json({ message: 'E-mail de simulação enviado com sucesso.' });
 
     } catch (error) {
-
+      return res.status(500).json({
+        error: 'Erro ao enviar e-mail.',
+        details: error.message
+      });
     }
   }
+
+
 }
 export default new PaymentsController();

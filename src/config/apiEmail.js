@@ -1,11 +1,11 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  host: 'sandbox.smtp.mailtrap.io',
-  port: 2525,
+  host: process.env.API_EMAIL_HOST,
+  port: process.env.API_EMAIL_PORT,
   auth: {
-    user: '29ae0b476a1744',
-    pass: '942a8ffd5ab593'
+    user: process.env.API_EMAIL_USER,
+    pass: process.env.API_EMAIL_PASS
   }
 });
 
@@ -15,7 +15,7 @@ export function emailPagamento(nome, email, valor) {
   to: `${email}`,
   subject: 'Confirmação de Pagamento',
   text: `Olá ${nome}`,
-  html: '<p><strong>Tudo bem? Obrigado por assinar nosso serviço!</strong>' +
+  html: `<p><strong>Olá ${nome}. Tudo bem? Obrigado por assinar nosso serviço!</strong>` +
         '<p>A equipe da Game Rent agradece pela sua compra! Muito obrigado por escolher nossos serviços.</p>' +
         '<p>Estamos sempre disponiveis com novidades incriveis juntamente com promoções imperdiveis</p>' +
         '<p>acesse nossos canais de atendimentos e redes sociais e fique por dentro de tudo!</p>' +
