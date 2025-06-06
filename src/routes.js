@@ -27,6 +27,8 @@ const upload = multer(multerConfig);
  *     description: Operações relacionadas aos jogos
  *   - name: Rents
  *     description: Operações relacionadas aos alugueis de jogos
+ *   - name: Payments
+ *     description: Operações relacionadas a pagamentos
  */
 
 // Home
@@ -50,7 +52,6 @@ routes.put("/api/users/:id", UsersController.update);
 routes.delete("/api/users/:id", UsersController.destroy);
 
 // Platforms
-
 /**
  * @swagger
  * /api/platforms:
@@ -484,13 +485,6 @@ routes.put("/api/rents/:id", RentController.update);
 // Payments
 /**
  * @swagger
- * tags:
- *   name: Payments
- *   description: Operações relacionadas aos pagamentos
- */
-
-/**
- * @swagger
  * /api/payments:
  *   get:
  *     summary: Lista todos os pagamentos
@@ -500,6 +494,7 @@ routes.put("/api/rents/:id", RentController.update);
  *         description: Lista de pagamentos
  *
  */
+routes.get("/api/payments", PaymentsController.index);
 
 /**
  * @swagger
@@ -521,18 +516,19 @@ routes.put("/api/rents/:id", RentController.update);
  *             properties:
  *               id_aluguel:
  *                 type: number
+ *                 example: 1
  *               valor:
  *                 type: number
  *               metodo:
  *                 type: string
- *               status:
- *                 type: string
+ *                 enum: [pix, cartao, boleto, transferencia]
  *     responses:
  *       201:
  *         description: Pagamento criado com sucesso
  *       400:
  *         description: Erro ao criar pagamento
  */
+routes.post("/api/payments", PaymentsController.create);
 
 /**
  * @swagger
@@ -554,11 +550,12 @@ routes.put("/api/rents/:id", RentController.update);
  *         description: Pagamento não encontrado
  *
  */
+routes.get("/api/payments/:id", PaymentsController.show);
 
 /**
  * @swagger
- * /api/payments/{pagamentoId}/simular-email:
- *   post:
+ * /api/payments/{paymentId}/pay:
+ *   put:
  *     summary: Envia um e-mail de simulação de pagamento
  *     tags: [Payments]
  *     parameters:
@@ -575,16 +572,14 @@ routes.put("/api/rents/:id", RentController.update);
  *           schema:
  *             type: object
  *             required:
- *               - nome
- *               - email
+ *               - status
  *             properties:
- *               nome:
+ *               status:
  *                 type: string
- *               email:
- *                 type: string
+ *                 enum: [aprovado, pendente, recusado]
  *     responses:
  *       200:
- *         description: E-mail de simulação enviado com sucesso
+ *         description: Pagamento atualizado com sucesso
  *       400:
  *         description: Dados inválidos ou ausentes
  *       404:
@@ -592,10 +587,6 @@ routes.put("/api/rents/:id", RentController.update);
  *       500:
  *         description: Erro ao enviar e-mail
  */
-
-routes.get("/api/payments", PaymentsController.index);
-routes.post("/api/payments", PaymentsController.create);
-routes.get("/api/payments/:id", PaymentsController.show);
-routes.post("/api/payments/:pagamentoId/simular-email", PaymentsController.simulaEmail);
+routes.put("/api/payments/:paymentId/pay", PaymentsController.update);
 
 export default routes;
