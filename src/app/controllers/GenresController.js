@@ -69,7 +69,7 @@ class GenresController {
 
       await genre.update(req.body);
 
-      return res.status(201).json({ message: "Gênero atualizado com sucesso" });
+      return res.status(200).json({ message: "Gênero atualizado com sucesso" });
    }
 
    async destroy(req, res) {

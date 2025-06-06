@@ -91,19 +91,33 @@ class UsersController {
          offset: limit * page - limit,
       });
 
-      console.log({ userId: req.userId });
-
       return res.json(data);
    }
 
    async store(req, res) {
-      const { name, email, password, tipo } = req.body;
+      const schema = Yup.object().shape({
+         name: Yup.string().required("Nome é obrigatório"),
+         email: Yup.string()
+            .email("E-mail inválido")
+            .required("E-mail é obrigatório"),
+         password: Yup.string()
+            .min(8, "A senha deve ter pelo menos 8 caracteres")
+            .required("Senha é obrigatória"),
+         tipo: Yup.string()
+            .oneOf(["admin", "cliente"], "Tipo deve ser 'admin' ou 'cliente'")
+            .required("Tipo é obrigatório"),
+      });
 
-      if (!name || !email || !password || !tipo) {
-         return res
-            .status(400)
-            .json({ error: "Todos os campos são obrigatórios" });
+      try {
+         await schema.validate(req.body, { abortEarly: false });
+      } catch (err) {
+         return res.status(400).json({
+            error: "Erro de validação",
+            messages: err.inner.map((e) => ({ field: e.path, message: e.message })),
+         });
       }
+
+      const { name, email, password, tipo } = req.body;
 
       const userExists = await User.findOne({ where: { email } });
       if (userExists) {
@@ -142,44 +156,100 @@ class UsersController {
    async update(req, res) {
       const schema = Yup.object().shape({
          name: Yup.string(),
-         email: Yup.string().email(),
-         oldPassword: Yup.string().min(8),
+         email: Yup.string().email("E-mail inválido"),
+         oldPassword: Yup.string().min(8, "A senha atual deve ter pelo menos 8 caracteres"),
          password: Yup.string()
-            .min(8)
+            .min(8, "A nova senha deve ter pelo menos 8 caracteres")
             .when("oldPassword", (oldPassword, field) =>
-               oldPassword ? field.required() : field
+               oldPassword ? field.required("Nova senha é obrigatória ao informar a senha atual") : field
             ),
          passwordConfirmation: Yup.string().when(
             "password",
             (password, field) =>
-               password ? field.required().oneOf([Yup.ref("password")]) : field
+               password
+                  ? field
+                     .required("Confirmação de senha é obrigatória")
+                     .oneOf([Yup.ref("password")], "As senhas não coincidem")
+                  : field
          ),
       });
 
-      if (!(await schema.isValid(req.body))) {
+      try {
+         await schema.validate(req.body, { abortEarly: false });
+      } catch (err) {
          return res.status(400).json({
-            error: "Error on validate schema.",
+            error: "Erro de validação",
+            messages: err.inner.map((e) => ({ field: e.path, message: e.message })),
          });
       }
 
       const user = await User.findByPk(req.params.id);
 
       if (!user) {
-         return res.status(404).json();
+         return res.status(404).json({ 
+            error: "Usuário não encontrado",
+            message: "O usuário com o ID fornecido não existe"
+         });
       }
 
-      const { oldPassword } = req.body;
-
-      if (oldPassword && !(await user.checkPassword(oldPassword))) {
-         return res.status(401).json({ error: "User password not match." });
+      // Verifica se o e-mail informado é diferente do atual e já existe no banco
+      if (req.body.email && req.body.email !== user.email) {
+         const userExists = await User.findOne({ where: { email: req.body.email } });
+         if (userExists) {
+            return res.status(400).json({ 
+               error: "E-mail já está em uso",
+               message: "Este e-mail já está sendo utilizado por outro usuário"
+            });
+         }
       }
 
-      const { id, name, email, fileId, createdAt, updatedAt } =
-         await user.update(req.body);
+      // Verifica se o nome informado corresponde ao nome atual do usuário
+      if (req.body.name && req.body.name !== user.name) {
+         return res.status(400).json({ 
+            error: "Nome não corresponde",
+            message: "O nome informado não corresponde ao nome cadastrado para este usuário"
+         });
+      }
 
-      return res
-         .status(201)
-         .json({ id, name, email, fileId, createdAt, updatedAt });
+      // Verifica se a senha antiga está correta
+      if (req.body.oldPassword && !(await user.checkPassword(req.body.oldPassword))) {
+         return res.status(401).json({ 
+            error: "Senha atual incorreta",
+            message: "A senha atual informada não confere com a senha cadastrada"
+         });
+      }
+
+      // Verifica se a nova senha não é igual à senha atual
+      if (req.body.password && req.body.oldPassword && (await user.checkPassword(req.body.password))) {
+         return res.status(400).json({ 
+            error: "Nova senha inválida",
+            message: "A nova senha não pode ser igual à senha atual"
+         });
+      }
+
+      try {
+         // Atualiza o usuário
+         const updatedUser = await user.update(req.body);
+
+         return res.status(200).json({
+            success: true,
+            message: "Usuário atualizado com sucesso",
+            user: {
+               id: updatedUser.id,
+               name: updatedUser.name,
+               email: updatedUser.email,
+               tipo: updatedUser.tipo,
+               is_active: updatedUser.is_active,
+               createdAt: updatedUser.createdAt,
+               updatedAt: updatedUser.updatedAt
+            }
+         });
+      } catch (error) {
+         return res.status(500).json({
+            error: "Erro interno do servidor",
+            message: "Ocorreu um erro ao atualizar o usuário. Tente novamente."
+         });
+      }
    }
 
    async destroy(req, res) {
@@ -199,7 +269,7 @@ class UsersController {
             message: "Este usuário já está desativado",
          });
       }
-
+     
       try {
          // Desativa o usuário ao invés de deletar
          await user.update({ is_active: false });

@@ -21,10 +21,10 @@ class App {
    }
 
    middlewares() {
+      this.server.use(cors());
       this.server.use(express.json());
       this.server.use(express.urlencoded({ extended: false }));
       this.server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-      this.server.use(cors());
    }
 
    routes() {

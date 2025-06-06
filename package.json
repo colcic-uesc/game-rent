@@ -43,9 +43,9 @@
       "@eslint/js": "^9.23.0",
       "eslint": "^9.23.0",
       "globals": "^16.0.0",
-      "nodemon": "^2.0.1",
+      "nodemon": "^2.0.22",
       "prettier": "3.5.3",
       "sequelize-cli": "^5.5.1",
-      "sucrase": "^3.10.1"
+      "sucrase": "^3.35.0"
    }
 }
