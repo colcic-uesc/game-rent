@@ -3,7 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import multerConfig from "./config/multer";
 
-import auth, { isClientActive, isAdmin, logout } from "./app/middlewares/auth";
+import auth, { isUserActive, isAdmin, logout } from "./app/middlewares/auth";
 
 import HomeController from "./app/controllers/HomeController";
 import RentController from "./app/controllers/RentController";
@@ -11,8 +11,8 @@ import UsersController from "./app/controllers/UsersController";
 import GamesController from "./app/controllers/GamesController";
 import GenresController from "./app/controllers/GenresController";
 import SessionsController from "./app/controllers/SessionsController";
-import PlatformsController from "./app/controllers/PlatformsController";
 import PaymentsController from "./app/controllers/PaymentsController";
+import PlatformsController from "./app/controllers/PlatformsController";
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -182,8 +182,8 @@ routes.post("/logout", auth, logout);
  *       400:
  *         description: Erro de validação ou usuário já existe
  */
-routes.get("/api/users", auth, isAdmin, UsersController.index);
-routes.post("/api/users", auth, isAdmin, UsersController.store);
+routes.get("/api/users", auth, isUserActive, isAdmin, UsersController.index);
+routes.post("/api/users", auth, isUserActive, isAdmin, UsersController.store);
 
 /**
  * @swagger
@@ -204,7 +204,7 @@ routes.post("/api/users", auth, isAdmin, UsersController.store);
  *       404:
  *         description: Usuário não encontrado
  */
-routes.get("/api/users/:id", auth, UsersController.show);
+routes.get("/api/users/:id", auth, isUserActive, UsersController.show);
 
 /**
  * @swagger
@@ -252,7 +252,7 @@ routes.get("/api/users/:id", auth, UsersController.show);
  *       500:
  *         description: Erro interno do servidor
  */
-routes.put("/api/users/:id", auth, UsersController.update);
+routes.put("/api/users/:id", auth, isUserActive, UsersController.update);
 
 /**
  * @swagger
@@ -277,7 +277,7 @@ routes.put("/api/users/:id", auth, UsersController.update);
  *       500:
  *         description: Erro interno do servidor
  */
-routes.delete("/api/users/:id", auth, UsersController.destroy);
+routes.delete("/api/users/:id", auth, isUserActive, UsersController.destroy);
 
 /**
  * @swagger
@@ -302,7 +302,13 @@ routes.delete("/api/users/:id", auth, UsersController.destroy);
  *       500:
  *         description: Erro interno do servidor
  */
-routes.put("/api/users/:id/activate", UsersController.activate);
+routes.put(
+   "/api/users/:id/activate",
+   auth,
+   isUserActive,
+   isAdmin,
+   UsersController.activate
+);
 
 /**
  * @swagger
@@ -322,7 +328,12 @@ routes.put("/api/users/:id/activate", UsersController.activate);
  *       404:
  *         description: Usuário ou histórico não encontrado
  */
-routes.get("/api/users/:id/history", auth, UsersController.history);
+routes.get(
+   "/api/users/:id/history",
+   auth,
+   isUserActive,
+   UsersController.history
+);
 
 // Platforms
 /**
@@ -355,8 +366,20 @@ routes.get("/api/users/:id/history", auth, UsersController.history);
  *       400:
  *         description: Erro de validação ou plataforma já existe
  */
-routes.get("/api/platforms", auth, isAdmin, PlatformsController.index);
-routes.post("/api/platforms", auth, isAdmin, PlatformsController.create);
+routes.get(
+   "/api/platforms",
+   auth,
+   isUserActive,
+   isAdmin,
+   PlatformsController.index
+);
+routes.post(
+   "/api/platforms",
+   auth,
+   isUserActive,
+   isAdmin,
+   PlatformsController.create
+);
 
 /**
  * @swagger
@@ -418,9 +441,27 @@ routes.post("/api/platforms", auth, isAdmin, PlatformsController.create);
  *       404:
  *         description: Plataforma não encontrada
  */
-routes.get("/api/platforms/:id", auth, isAdmin, PlatformsController.show);
-routes.put("/api/platforms/:id", auth, isAdmin, PlatformsController.update);
-routes.delete("/api/platforms/:id", auth, isAdmin, PlatformsController.destroy);
+routes.get(
+   "/api/platforms/:id",
+   auth,
+   isUserActive,
+   isAdmin,
+   PlatformsController.show
+);
+routes.put(
+   "/api/platforms/:id",
+   auth,
+   isUserActive,
+   isAdmin,
+   PlatformsController.update
+);
+routes.delete(
+   "/api/platforms/:id",
+   auth,
+   isUserActive,
+   isAdmin,
+   PlatformsController.destroy
+);
 
 // Genres
 /**
@@ -453,8 +494,14 @@ routes.delete("/api/platforms/:id", auth, isAdmin, PlatformsController.destroy);
  *       400:
  *        description: Erro de validação ou gênero já existe
  */
-routes.get("/api/genres", auth, isAdmin, GenresController.index);
-routes.post("/api/genres", auth, isAdmin, GenresController.create);
+routes.get("/api/genres", auth, isUserActive, isAdmin, GenresController.index);
+routes.post(
+   "/api/genres",
+   auth,
+   isUserActive,
+   isAdmin,
+   GenresController.create
+);
 
 /**
  * @swagger
@@ -516,9 +563,27 @@ routes.post("/api/genres", auth, isAdmin, GenresController.create);
  *       404:
  *          description: Gênero não encontrado
  */
-routes.get("/api/genres/:id", auth, isAdmin, GenresController.show);
-routes.put("/api/genres/:id", auth, isAdmin, GenresController.update);
-routes.delete("/api/genres/:id", auth, isAdmin, GenresController.destroy);
+routes.get(
+   "/api/genres/:id",
+   auth,
+   isUserActive,
+   isAdmin,
+   GenresController.show
+);
+routes.put(
+   "/api/genres/:id",
+   auth,
+   isUserActive,
+   isAdmin,
+   GenresController.update
+);
+routes.delete(
+   "/api/genres/:id",
+   auth,
+   isUserActive,
+   isAdmin,
+   GenresController.destroy
+);
 
 // Games
 /**
@@ -579,10 +644,11 @@ routes.delete("/api/genres/:id", auth, isAdmin, GenresController.destroy);
  *       400:
  *         description: Erro de validação ou jogo já cadastrado
  */
-routes.get("/api/games", auth, isClientActive, GamesController.index);
+routes.get("/api/games", auth, isUserActive, GamesController.index);
 routes.post(
    "/api/games",
    auth,
+   isUserActive,
    isAdmin,
    upload.single("capa_jogo"),
    GamesController.create
@@ -676,15 +742,22 @@ routes.post(
  *       404:
  *         description: Jogo não encontrado
  */
-routes.get("/api/games/:id", auth, isClientActive, GamesController.show);
+routes.get("/api/games/:id", auth, isUserActive, GamesController.show);
 routes.put(
    "/api/games/:id",
    upload.single("capa_jogo"),
    auth,
+   isUserActive,
    isAdmin,
    GamesController.update
 );
-routes.delete("/api/games/:id", auth, isAdmin, GamesController.destroy);
+routes.delete(
+   "/api/games/:id",
+   auth,
+   isUserActive,
+   isAdmin,
+   GamesController.destroy
+);
 
 // Rents
 /**
@@ -725,8 +798,8 @@ routes.delete("/api/games/:id", auth, isAdmin, GamesController.destroy);
  *       500:
  *         description: Erro interno do servidor
  */
-routes.get("/api/rents", auth, isAdmin, RentController.index);
-routes.post("/api/rents", auth, isClientActive, RentController.create);
+routes.get("/api/rents", auth, isUserActive, isAdmin, RentController.index);
+routes.post("/api/rents", auth, isUserActive, RentController.create);
 
 /**
  * @swagger
@@ -764,8 +837,14 @@ routes.post("/api/rents", auth, isClientActive, RentController.create);
  *       404:
  *         description: Registro de aluguel não encontrado
  */
-routes.get("/api/rents/:id", auth, isClientActive, RentController.show);
-routes.put("/api/rents/:id", auth, isAdmin, RentController.update);
+routes.get("/api/rents/:id", auth, isUserActive, RentController.show);
+routes.put(
+   "/api/rents/:id",
+   auth,
+   isUserActive,
+   isAdmin,
+   RentController.update
+);
 
 // Payments
 /**
@@ -779,7 +858,13 @@ routes.put("/api/rents/:id", auth, isAdmin, RentController.update);
  *         description: Lista de pagamentos
  *
  */
-routes.get("/api/payments", PaymentsController.index);
+routes.get(
+   "/api/payments",
+   auth,
+   isUserActive,
+   isAdmin,
+   PaymentsController.index
+);
 
 /**
  * @swagger
@@ -813,7 +898,7 @@ routes.get("/api/payments", PaymentsController.index);
  *       400:
  *         description: Erro ao criar pagamento
  */
-routes.post("/api/payments", PaymentsController.create);
+routes.post("/api/payments", auth, isUserActive, PaymentsController.create);
 
 /**
  * @swagger
@@ -835,7 +920,7 @@ routes.post("/api/payments", PaymentsController.create);
  *         description: Pagamento não encontrado
  *
  */
-routes.get("/api/payments/:id", PaymentsController.show);
+routes.get("/api/payments/:id", auth, isUserActive, PaymentsController.show);
 
 /**
  * @swagger
@@ -872,6 +957,12 @@ routes.get("/api/payments/:id", PaymentsController.show);
  *       500:
  *         description: Erro ao enviar e-mail
  */
-routes.put("/api/payments/:paymentId/pay", PaymentsController.update);
+routes.put(
+   "/api/payments/:paymentId/pay",
+   auth,
+   isUserActive,
+   isAdmin,
+   PaymentsController.update
+);
 
 export default routes;
