@@ -2,7 +2,7 @@ import Game from "../models/Game";
 import Rent from "../models/Rent";
 import GameRent from "../models/GameRent";
 
-class AluguelController {
+class RentsController {
    async index(req, res) {
       try {
          const alugueis = await Rent.findAll({
@@ -126,4 +126,4 @@ class AluguelController {
    }
 }
 
-export default new AluguelController();
+export default new RentsController();

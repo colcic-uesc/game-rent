@@ -3,11 +3,14 @@ import { Router } from "express";
 import multer from "multer";
 import multerConfig from "./config/multer";
 
+import auth, { isClientActive, isAdmin, logout } from "./app/middlewares/auth";
+
 import HomeController from "./app/controllers/HomeController";
+import RentController from "./app/controllers/RentController";
 import UsersController from "./app/controllers/UsersController";
 import GamesController from "./app/controllers/GamesController";
-import RentController from "./app/controllers/RentController";
 import GenresController from "./app/controllers/GenresController";
+import SessionsController from "./app/controllers/SessionsController";
 import PlatformsController from "./app/controllers/PlatformsController";
 import PaymentsController from "./app/controllers/PaymentsController";
 
@@ -19,6 +22,10 @@ const upload = multer(multerConfig);
  * tags:
  *   - name: Home
  *     description: Rota de boas-vindas
+ *   - name: Auth
+ *     description: Operações relacionadas ao cadastro e autenticação do usuário (login)
+ *   - name: Users
+ *     description: Operações relacionadas aos usuários
  *   - name: Platforms
  *     description: Operações relacionadas às plataformas
  *   - name: Genres
@@ -44,12 +51,278 @@ const upload = multer(multerConfig);
  */
 routes.get("/", HomeController.index);
 
+// Auth
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Cria uma nova sessão de usuário (login)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: joao@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: 12345678
+ *     responses:
+ *       200:
+ *         description: Sessão criada com sucesso
+ *       400:
+ *         description: Credenciais inválidas
+ */
+routes.post("/login", SessionsController.create);
+
+/**
+ * @swagger
+ * /signup:
+ *   post:
+ *     summary: Cria uma nova conta de usuário (cadastro)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - tipo
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: João Silva
+ *               email:
+ *                 type: string
+ *                 example: joao@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: 12345678
+ *               tipo:
+ *                 type: string
+ *                 enum: [admin, cliente]
+ *                 example: admin
+ *     responses:
+ *       200:
+ *         description: Conta criada com sucesso
+ *       400:
+ *         description: Erro de validação ou usuário já existe
+ */
+routes.post("/signup", UsersController.store);
+
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: Encerra a sessão do usuário (logout)
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout realizado com sucesso
+ *       400:
+ *         description: Token não fornecido
+ *       401:
+ *         description: Token inválido
+ */
+routes.post("/logout", auth, logout);
+
 // Users
-routes.get("/api/users", UsersController.index);
-routes.get("/api/users/:id", UsersController.show);
-routes.post("/api/users", UsersController.create);
-routes.put("/api/users/:id", UsersController.update);
-routes.delete("/api/users/:id", UsersController.destroy);
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Lista todos os usuários
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Lista de usuários
+ *   post:
+ *     summary: Cria um novo usuário
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - tipo
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: João Silva
+ *               email:
+ *                 type: string
+ *                 example: joao@email.com
+ *               password:
+ *                 type: string
+ *                 example: 12345678
+ *               tipo:
+ *                type: string
+ *                example: cliente
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
+ *       400:
+ *         description: Erro de validação ou usuário já existe
+ */
+routes.get("/api/users", auth, isAdmin, UsersController.index);
+routes.post("/api/users", auth, isAdmin, UsersController.store);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Retorna os dados de um usuário específico
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário
+ *     responses:
+ *       200:
+ *         description: Dados do usuário encontrados
+ *       404:
+ *         description: Usuário não encontrado
+ */
+routes.get("/api/users/:id", auth, UsersController.show);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     summary: Atualiza os dados de um usuário
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário a ser atualizado
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               oldPassword:
+ *                 type: string
+ *                 minLength: 8
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *               passwordConfirmation:
+ *                 type: string
+ *                 minLength: 8
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado com sucesso
+ *       400:
+ *         description: Erro de validação
+ *       401:
+ *         description: Senha atual incorreta
+ *       404:
+ *         description: Usuário não encontrado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+routes.put("/api/users/:id", auth, UsersController.update);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: Desativa um usuário (soft delete)
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário a ser desativado
+ *     responses:
+ *       204:
+ *         description: Usuário desativado com sucesso
+ *       400:
+ *         description: Usuário já desativado
+ *       404:
+ *         description: Usuário não encontrado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+routes.delete("/api/users/:id", auth, UsersController.destroy);
+
+/**
+ * @swagger
+ * /api/users/{id}/activate:
+ *   put:
+ *     summary: Reativa um usuário desativado
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário a ser reativado
+ *     responses:
+ *       200:
+ *         description: Usuário reativado com sucesso
+ *       400:
+ *         description: Usuário já ativo
+ *       404:
+ *         description: Usuário não encontrado
+ *       500:
+ *         description: Erro interno do servidor
+ */
+routes.put("/api/users/:id/activate", UsersController.activate);
+
+/**
+ * @swagger
+ * /api/users/{id}/history:
+ *   get:
+ *     summary: Retorna o histórico de aluguéis do usuário
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de aluguéis com jogo e plataforma
+ *       404:
+ *         description: Usuário ou histórico não encontrado
+ */
+routes.get("/api/users/:id/history", auth, UsersController.history);
 
 // Platforms
 /**
@@ -82,8 +355,8 @@ routes.delete("/api/users/:id", UsersController.destroy);
  *       400:
  *         description: Erro de validação ou plataforma já existe
  */
-routes.get("/api/platforms", PlatformsController.index);
-routes.post("/api/platforms", PlatformsController.create);
+routes.get("/api/platforms", auth, isAdmin, PlatformsController.index);
+routes.post("/api/platforms", auth, isAdmin, PlatformsController.create);
 
 /**
  * @swagger
@@ -145,9 +418,9 @@ routes.post("/api/platforms", PlatformsController.create);
  *       404:
  *         description: Plataforma não encontrada
  */
-routes.get("/api/platforms/:id", PlatformsController.show);
-routes.put("/api/platforms/:id", PlatformsController.update);
-routes.delete("/api/platforms/:id", PlatformsController.destroy);
+routes.get("/api/platforms/:id", auth, isAdmin, PlatformsController.show);
+routes.put("/api/platforms/:id", auth, isAdmin, PlatformsController.update);
+routes.delete("/api/platforms/:id", auth, isAdmin, PlatformsController.destroy);
 
 // Genres
 /**
@@ -180,8 +453,8 @@ routes.delete("/api/platforms/:id", PlatformsController.destroy);
  *       400:
  *        description: Erro de validação ou gênero já existe
  */
-routes.get("/api/genres", GenresController.index);
-routes.post("/api/genres", GenresController.create);
+routes.get("/api/genres", auth, isAdmin, GenresController.index);
+routes.post("/api/genres", auth, isAdmin, GenresController.create);
 
 /**
  * @swagger
@@ -243,9 +516,9 @@ routes.post("/api/genres", GenresController.create);
  *       404:
  *          description: Gênero não encontrado
  */
-routes.get("/api/genres/:id", GenresController.show);
-routes.put("/api/genres/:id", GenresController.update);
-routes.delete("/api/genres/:id", GenresController.destroy);
+routes.get("/api/genres/:id", auth, isAdmin, GenresController.show);
+routes.put("/api/genres/:id", auth, isAdmin, GenresController.update);
+routes.delete("/api/genres/:id", auth, isAdmin, GenresController.destroy);
 
 // Games
 /**
@@ -306,8 +579,14 @@ routes.delete("/api/genres/:id", GenresController.destroy);
  *       400:
  *         description: Erro de validação ou jogo já cadastrado
  */
-routes.get("/api/games", GamesController.index);
-routes.post("/api/games", upload.single("capa_jogo"), GamesController.create);
+routes.get("/api/games", auth, isClientActive, GamesController.index);
+routes.post(
+   "/api/games",
+   auth,
+   isAdmin,
+   upload.single("capa_jogo"),
+   GamesController.create
+);
 
 /**
  * @swagger
@@ -397,13 +676,15 @@ routes.post("/api/games", upload.single("capa_jogo"), GamesController.create);
  *       404:
  *         description: Jogo não encontrado
  */
-routes.get("/api/games/:id", GamesController.show);
+routes.get("/api/games/:id", auth, isClientActive, GamesController.show);
 routes.put(
    "/api/games/:id",
    upload.single("capa_jogo"),
+   auth,
+   isAdmin,
    GamesController.update
 );
-routes.delete("/api/games/:id", GamesController.destroy);
+routes.delete("/api/games/:id", auth, isAdmin, GamesController.destroy);
 
 // Rents
 /**
@@ -430,8 +711,12 @@ routes.delete("/api/games/:id", GamesController.destroy);
  *             properties:
  *               id_usuario:
  *                 type: number
+ *                 example: 1
  *               jogo_ids:
  *                 type: array
+ *                 items:
+ *                   type: number
+ *                 example: [2, 3]
  *     responses:
  *       201:
  *         description: Aluguel registrado com sucesso
@@ -440,8 +725,8 @@ routes.delete("/api/games/:id", GamesController.destroy);
  *       500:
  *         description: Erro interno do servidor
  */
-routes.get("/api/rents", RentController.index);
-routes.post("/api/rents", RentController.create);
+routes.get("/api/rents", auth, isAdmin, RentController.index);
+routes.post("/api/rents", auth, isClientActive, RentController.create);
 
 /**
  * @swagger
@@ -479,8 +764,8 @@ routes.post("/api/rents", RentController.create);
  *       404:
  *         description: Registro de aluguel não encontrado
  */
-routes.get("/api/rents/:id", RentController.show);
-routes.put("/api/rents/:id", RentController.update);
+routes.get("/api/rents/:id", auth, isClientActive, RentController.show);
+routes.put("/api/rents/:id", auth, isAdmin, RentController.update);
 
 // Payments
 /**
