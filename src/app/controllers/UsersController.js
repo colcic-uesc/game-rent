@@ -1,6 +1,6 @@
 import * as Yup from "yup";
-import { parseISO } from "date-fns";
 import { Op } from "sequelize";
+import { parseISO } from "date-fns";
 
 import User from "../models/User";
 import Rent from "../models/Rent";
@@ -108,12 +108,9 @@ class UsersController {
             .required("Tipo é obrigatório"),
       });
 
-      try {
-         await schema.validate(req.body, { abortEarly: false });
-      } catch (err) {
+      if (!(await schema.validate(req.body))) {
          return res.status(400).json({
             error: "Erro de validação",
-            messages: err.inner.map((e) => ({ field: e.path, message: e.message })),
          });
       }
 
@@ -157,73 +154,88 @@ class UsersController {
       const schema = Yup.object().shape({
          name: Yup.string(),
          email: Yup.string().email("E-mail inválido"),
-         oldPassword: Yup.string().min(8, "A senha atual deve ter pelo menos 8 caracteres"),
+         oldPassword: Yup.string().min(
+            8,
+            "A senha atual deve ter pelo menos 8 caracteres"
+         ),
          password: Yup.string()
             .min(8, "A nova senha deve ter pelo menos 8 caracteres")
             .when("oldPassword", (oldPassword, field) =>
-               oldPassword ? field.required("Nova senha é obrigatória ao informar a senha atual") : field
+               oldPassword
+                  ? field.required(
+                       "Nova senha é obrigatória ao informar a senha atual"
+                    )
+                  : field
             ),
          passwordConfirmation: Yup.string().when(
             "password",
             (password, field) =>
                password
                   ? field
-                     .required("Confirmação de senha é obrigatória")
-                     .oneOf([Yup.ref("password")], "As senhas não coincidem")
+                       .required("Confirmação de senha é obrigatória")
+                       .oneOf([Yup.ref("password")], "As senhas não coincidem")
                   : field
          ),
       });
 
-      try {
-         await schema.validate(req.body, { abortEarly: false });
-      } catch (err) {
+      if (!(await schema.validate(req.body))) {
          return res.status(400).json({
             error: "Erro de validação",
-            messages: err.inner.map((e) => ({ field: e.path, message: e.message })),
          });
       }
 
       const user = await User.findByPk(req.params.id);
 
       if (!user) {
-         return res.status(404).json({ 
+         return res.status(404).json({
             error: "Usuário não encontrado",
-            message: "O usuário com o ID fornecido não existe"
+            message: "O usuário com o ID fornecido não existe",
          });
       }
 
       // Verifica se o e-mail informado é diferente do atual e já existe no banco
       if (req.body.email && req.body.email !== user.email) {
-         const userExists = await User.findOne({ where: { email: req.body.email } });
+         const userExists = await User.findOne({
+            where: { email: req.body.email },
+         });
          if (userExists) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                error: "E-mail já está em uso",
-               message: "Este e-mail já está sendo utilizado por outro usuário"
+               message: "Este e-mail já está sendo utilizado por outro usuário",
             });
          }
       }
 
       // Verifica se o nome informado corresponde ao nome atual do usuário
       if (req.body.name && req.body.name !== user.name) {
-         return res.status(400).json({ 
+         return res.status(400).json({
             error: "Nome não corresponde",
-            message: "O nome informado não corresponde ao nome cadastrado para este usuário"
+            message:
+               "O nome informado não corresponde ao nome cadastrado para este usuário",
          });
       }
 
       // Verifica se a senha antiga está correta
-      if (req.body.oldPassword && !(await user.checkPassword(req.body.oldPassword))) {
-         return res.status(401).json({ 
+      if (
+         req.body.oldPassword &&
+         !(await user.checkPassword(req.body.oldPassword))
+      ) {
+         return res.status(401).json({
             error: "Senha atual incorreta",
-            message: "A senha atual informada não confere com a senha cadastrada"
+            message:
+               "A senha atual informada não confere com a senha cadastrada",
          });
       }
 
       // Verifica se a nova senha não é igual à senha atual
-      if (req.body.password && req.body.oldPassword && (await user.checkPassword(req.body.password))) {
-         return res.status(400).json({ 
+      if (
+         req.body.password &&
+         req.body.oldPassword &&
+         (await user.checkPassword(req.body.password))
+      ) {
+         return res.status(400).json({
             error: "Nova senha inválida",
-            message: "A nova senha não pode ser igual à senha atual"
+            message: "A nova senha não pode ser igual à senha atual",
          });
       }
 
@@ -241,13 +253,14 @@ class UsersController {
                tipo: updatedUser.tipo,
                is_active: updatedUser.is_active,
                createdAt: updatedUser.createdAt,
-               updatedAt: updatedUser.updatedAt
-            }
+               updatedAt: updatedUser.updatedAt,
+            },
          });
       } catch (error) {
          return res.status(500).json({
             error: "Erro interno do servidor",
-            message: "Ocorreu um erro ao atualizar o usuário. Tente novamente."
+            message: "Ocorreu um erro ao atualizar o usuário. Tente novamente.",
+            details: error.message,
          });
       }
    }
@@ -269,7 +282,7 @@ class UsersController {
             message: "Este usuário já está desativado",
          });
       }
-     
+
       try {
          // Desativa o usuário ao invés de deletar
          await user.update({ is_active: false });
