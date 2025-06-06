@@ -119,6 +119,7 @@ class GamesController {
          capa_jogo: Yup.mixed()
             .required("File is required")
             .test("is-valid-type", "Not a valid image type", (value) =>
+               // eslint-disable-next-line no-undef
                isValidFileType(value && value.name.toLowerCase(), "image")
             )
             .test(
@@ -178,6 +179,7 @@ class GamesController {
          capa_jogo: Yup.mixed()
             .required("File is required")
             .test("is-valid-type", "Not a valid image type", (value) =>
+               // eslint-disable-next-line no-undef
                isValidFileType(value && value.name.toLowerCase(), "image")
             )
             .test(
@@ -203,7 +205,7 @@ class GamesController {
       }
 
       await game.update(req.body);
-      
+
       return res.status(200).json({ message: "Jogo atualizado com sucesso." });
    }
 

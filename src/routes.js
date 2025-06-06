@@ -12,6 +12,7 @@ import GamesController from "./app/controllers/GamesController";
 import GenresController from "./app/controllers/GenresController";
 import SessionsController from "./app/controllers/SessionsController";
 import PlatformsController from "./app/controllers/PlatformsController";
+import PaymentsController from "./app/controllers/PaymentsController";
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -33,6 +34,8 @@ const upload = multer(multerConfig);
  *     description: Operações relacionadas aos jogos
  *   - name: Rents
  *     description: Operações relacionadas aos alugueis de jogos
+ *   - name: Payments
+ *     description: Operações relacionadas a pagamentos
  */
 
 // Home
@@ -763,5 +766,112 @@ routes.post("/api/rents", auth, isClientActive, RentController.create);
  */
 routes.get("/api/rents/:id", auth, isClientActive, RentController.show);
 routes.put("/api/rents/:id", auth, isAdmin, RentController.update);
+
+// Payments
+/**
+ * @swagger
+ * /api/payments:
+ *   get:
+ *     summary: Lista todos os pagamentos
+ *     tags: [Payments]
+ *     responses:
+ *       200:
+ *         description: Lista de pagamentos
+ *
+ */
+routes.get("/api/payments", PaymentsController.index);
+
+/**
+ * @swagger
+ * /api/payments:
+ *   post:
+ *     summary: Registra um novo pagamento
+ *     tags: [Payments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_aluguel
+ *               - valor
+ *               - metodo
+ *               - status
+ *             properties:
+ *               id_aluguel:
+ *                 type: number
+ *                 example: 1
+ *               valor:
+ *                 type: number
+ *               metodo:
+ *                 type: string
+ *                 enum: [pix, cartao, boleto, transferencia]
+ *     responses:
+ *       201:
+ *         description: Pagamento criado com sucesso
+ *       400:
+ *         description: Erro ao criar pagamento
+ */
+routes.post("/api/payments", PaymentsController.create);
+
+/**
+ * @swagger
+ * /api/payments/{id}:
+ *   get:
+ *     summary: Retorna um pagamento pelo ID
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do pagamento
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Pagamento encontrado
+ *       404:
+ *         description: Pagamento não encontrado
+ *
+ */
+routes.get("/api/payments/:id", PaymentsController.show);
+
+/**
+ * @swagger
+ * /api/payments/{paymentId}/pay:
+ *   put:
+ *     summary: Envia um e-mail de simulação de pagamento
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: pagamentoId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: ID do pagamento a ser simulado
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [aprovado, pendente, recusado]
+ *     responses:
+ *       200:
+ *         description: Pagamento atualizado com sucesso
+ *       400:
+ *         description: Dados inválidos ou ausentes
+ *       404:
+ *         description: Pagamento não encontrado
+ *       500:
+ *         description: Erro ao enviar e-mail
+ */
+routes.put("/api/payments/:paymentId/pay", PaymentsController.update);
 
 export default routes;
