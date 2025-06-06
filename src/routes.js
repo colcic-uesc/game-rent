@@ -178,7 +178,7 @@ routes.put("/api/users/:id", UsersController.update);
  *       500:
  *         description: Erro interno do servidor
  */
-routes.delete("/api/users/:id", auth, UsersController.destroy);
+routes.delete("/api/users/:id", UsersController.destroy);
 
 /**
  * @swagger
@@ -203,7 +203,7 @@ routes.delete("/api/users/:id", auth, UsersController.destroy);
  *       500:
  *         description: Erro interno do servidor
  */
-routes.put("/api/users/:id/activate", auth, UsersController.activate);
+routes.put("/api/users/:id/activate", UsersController.activate);
 
 /**
  * @swagger
