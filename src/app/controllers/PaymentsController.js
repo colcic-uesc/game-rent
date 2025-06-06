@@ -8,12 +8,12 @@ class PaymentsController {
   async index(req, res) {
     try {
       const payments = await Payment.findAll();
-      
+
       return res
-         .status(200)
-         .json({ message: "Pagamentos listados com sucesso", data: payments });
-        
-            
+        .status(200)
+        .json({ message: "Pagamentos listados com sucesso", data: payments });
+
+
     } catch (error) {
       return res.status(400).json({
         error: "Erro ao listar pagamentos.",
@@ -43,24 +43,11 @@ class PaymentsController {
   async create(req, res) {
     try {
       const { id_aluguel, valor, metodo, status } = req.body;
-      // console.log("Dados do pagamento:", { id_aluguel, valor, metodo, status });
       const payment = await Payment.create({ id_aluguel, valor, metodo, status });
-      
-
-      // if (status == 'aprovado') {
-        
-      // emailPagamento(
-      //   "Igor",
-      //   "igoruser07@gmail.com",
-      //   req.body.valor,
-      // );
-      // }
-
 
       return res
         .status(201)
-        .json({ message: "Pagamento criado com sucesso", data: payment })
-        .send(emailContent);
+        .json({ message: "Pagamento criado com sucesso", data: payment });
     } catch (error) {
       return res.status(400).json({
         error: "Erro ao criar pagamento.",
@@ -93,15 +80,15 @@ class PaymentsController {
   }
 
   // Envia um email de simulação de pagamento
-  // (a ser implementado)  
+  // (a ser implementado)
   async simulaEmail(req, res) {
     const { pagamentoId } = req.params;
     const t = await sequelize.Transaction();
 
     try {
-      
+
     } catch (error) {
-      
+
     }
   }
 }

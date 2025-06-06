@@ -498,12 +498,40 @@ routes.put("/api/rents/:id", RentController.update);
  *     responses:
  *       200:
  *         description: Lista de pagamentos
+ *
+ */
+
+/**
+ * @swagger
+ * /api/payments:
  *   post:
- *     summary: Cria um novo pagamento
+ *     summary: Registra um novo pagamento
  *     tags: [Payments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_aluguel
+ *               - valor
+ *               - metodo
+ *               - status
+ *             properties:
+ *               id_aluguel:
+ *                 type: number
+ *               valor:
+ *                 type: number
+ *               metodo:
+ *                 type: string
+ *               status:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Pagamento criado com sucesso
+ *       400:
+ *         description: Erro ao criar pagamento
  */
 
 /**
@@ -524,9 +552,8 @@ routes.put("/api/rents/:id", RentController.update);
  *         description: Pagamento encontrado
  *       404:
  *         description: Pagamento não encontrado
- * 
+ *
  */
-
 
 routes.get("/api/payments", PaymentsController.index);
 routes.post("/api/payments", PaymentsController.create);
