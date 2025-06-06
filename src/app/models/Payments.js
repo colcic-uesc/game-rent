@@ -1,3 +1,5 @@
+"use strict";
+
 import { Model, DataTypes } from "sequelize";
 
 class Payments extends Model {
