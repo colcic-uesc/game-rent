@@ -15,16 +15,21 @@ export default async (req, res, next) => {
    const [, token] = authHeader.split(" ");
 
    if (tokenBlacklist.has(token)) {
-      return res.status(401).json({ message: "Token inválido (usuário deslogado)" });
+      return res
+         .status(401)
+         .json({ message: "Token inválido (usuário deslogado)" });
    }
 
    try {
-      const decoded = await promisify(jwt.verify)(token, process.env.APP_SECRET);
+      const decoded = await promisify(jwt.verify)(
+         token,
+         process.env.APP_SECRET
+      );
 
       req.user = {
          id: decoded.id,
          role: decoded.role,
-         active: decoded.active
+         active: decoded.active,
       };
 
       return next();
@@ -37,6 +42,7 @@ export default async (req, res, next) => {
 // Rota de logout
 export const logout = (req, res) => {
    const authHeader = req.headers.authorization;
+
    if (!authHeader) {
       return res.status(400).json({ message: "Token não fornecido" });
    }
@@ -48,18 +54,26 @@ export const logout = (req, res) => {
 };
 
 // Middlewares de acesso
-export const isClientActive = (req, res, next) => {
+export const isUserActive = (req, res, next) => {
    const user = req.user;
-   if (!user || user.role !== 'cliente' || !user.active) {
-      return res.status(403).json({ error: 'Apenas clientes ativos podem registrar aluguéis.' });
+
+   if (!user || !user.active) {
+      return res
+         .status(403)
+         .json({ error: "Apenas clientes ativos podem registrar aluguéis." });
    }
+
    next();
 };
 
 export const isAdmin = (req, res, next) => {
    const user = req.user;
-   if (!user || user.role !== 'admin') {
-      return res.status(403).json({ error: 'Apenas administradores têm acesso a esta operação.' });
+
+   if (!user || user.role !== "admin") {
+      return res
+         .status(403)
+         .json({ error: "Apenas administradores têm acesso a esta operação." });
    }
+
    next();
 };
