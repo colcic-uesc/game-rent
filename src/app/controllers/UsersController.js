@@ -256,45 +256,118 @@ class UsersController {
       const user = await User.findByPk(req.params.id);
 
       if (!user) {
-         return res.status(404).json();
+         return res.status(404).json({
+            error: "Usuário não encontrado",
+            message: "O usuário com o ID fornecido não existe",
+         });
       }
 
-      user.is_active = false;
-      await user.save();
+      // Verifica se o usuário já está desativado
+      if (!user.is_active) {
+         return res.status(400).json({
+            error: "Usuário já desativado",
+            message: "Este usuário já está desativado",
+         });
+      }
+     
+      try {
+         // Desativa o usuário ao invés de deletar
+         await user.update({ is_active: false });
 
-      return res.status(204).send();
+         return res.status(200).json({
+            success: true,
+            message: "Usuário desativado com sucesso",
+         });
+      } catch (error) {
+         return res.status(500).json({
+            error: "Erro interno do servidor",
+            message: "Ocorreu um erro ao desativar o usuário. Tente novamente.",
+            details: error.message,
+         });
+      }
+   }
+
+   async activate(req, res) {
+      const user = await User.findByPk(req.params.id);
+
+      if (!user) {
+         return res.status(404).json({
+            error: "Usuário não encontrado",
+            message: "O usuário com o ID fornecido não existe",
+         });
+      }
+
+      // Verifica se o usuário já está ativo
+      if (user.is_active) {
+         return res.status(400).json({
+            error: "Usuário já ativo",
+            message: "Este usuário já está ativo",
+         });
+      }
+
+      try {
+         // Reativa o usuário
+         await user.update({ is_active: true });
+
+         return res.status(200).json({
+            success: true,
+            message: "Usuário reativado com sucesso",
+            user: {
+               id: user.id,
+               name: user.name,
+               email: user.email,
+               tipo: user.tipo,
+               is_active: true,
+               createdAt: user.createdAt,
+               updatedAt: user.updatedAt,
+            },
+         });
+      } catch (error) {
+         return res.status(500).json({
+            error: "Erro interno do servidor",
+            message: "Ocorreu um erro ao reativar o usuário. Tente novamente.",
+         });
+      }
    }
 
    async history(req, res) {
-      const userId = req.params.id;
+      try {
+         const userId = req.params.id;
 
-      const alugueis = await Rent.findAll({
-         where: { id_usuario: userId },
-         include: [
-            {
-               model: Game,
-               as: "jogos",
-               attributes: ["id", "title"],
-               include: [
-                  {
-                     model: Platform,
-                     as: "platform",
-                     attributes: ["id", "name"],
-                  },
-               ],
-            },
-         ],
-         attributes: [
-            "id",
-            "data_aluguel",
-            "data_devolucao",
-            "created_at",
-            "updated_at",
-         ],
-         order: [["data_aluguel", "DESC"]],
-      });
+         const alugueis = await Rent.findAll({
+            where: { id_usuario: userId },
+            include: [
+               {
+                  model: Game,
+                  as: "jogos",
+                  attributes: ["id", "title"],
+                  include: [
+                     {
+                        model: Platform,
+                        as: "platform",
+                        attributes: ["id", "name"],
+                     },
+                  ],
+               },
+            ],
+            attributes: [
+               "id",
+               "data_aluguel",
+               "data_devolucao",
+               "created_at",
+               "updated_at",
+            ],
+            order: [["data_aluguel", "DESC"]],
+         });
 
-      return res.json(alugueis);
+         return res.json(alugueis);
+      } catch (err) {
+         console.error("Erro no histórico:", err);
+         return res.status(500).json({
+            error: "Erro interno ao buscar histórico",
+            detalhes: err.message,
+         });
+      }
    }
 }
 
