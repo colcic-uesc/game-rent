@@ -486,7 +486,7 @@ routes.put("/api/rents/:id", RentController.update);
  * @swagger
  * tags:
  *   name: Payments
- *   description: Gerenciamento de pagamentos
+ *   description: Operações relacionadas aos pagamentos
  */
 
 /**
@@ -555,11 +555,47 @@ routes.put("/api/rents/:id", RentController.update);
  *
  */
 
+/**
+ * @swagger
+ * /api/payments/{pagamentoId}/simular-email:
+ *   post:
+ *     summary: Envia um e-mail de simulação de pagamento
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: pagamentoId
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: ID do pagamento a ser simulado
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nome
+ *               - email
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: E-mail de simulação enviado com sucesso
+ *       400:
+ *         description: Dados inválidos ou ausentes
+ *       404:
+ *         description: Pagamento não encontrado
+ *       500:
+ *         description: Erro ao enviar e-mail
+ */
+
 routes.get("/api/payments", PaymentsController.index);
 routes.post("/api/payments", PaymentsController.create);
 routes.get("/api/payments/:id", PaymentsController.show);
-
-routes.get("/api/payments/:pagamentoId/simular-email", PaymentsController.simulaEmail);
-
+routes.post("/api/payments/:pagamentoId/simular-email", PaymentsController.simulaEmail);
 
 export default routes;
