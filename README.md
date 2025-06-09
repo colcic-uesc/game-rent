@@ -39,7 +39,7 @@ O **GameVerse** é um sistema de aluguel de jogos desenvolvido em Node.js, como 
 Clone o projeto na sua máquina
 
 ```bash
-  git clone git@github.com:cmoliv/game-rent.git
+  git clone git@github.com:colcic-uesc/game-rent.git
 ```
 
 Vá até o diretório do projeto
