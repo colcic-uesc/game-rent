@@ -1,43 +1,43 @@
 "use strict";
 
 module.exports = {
-   up: (queryInterface, Sequelize) => {
+   up: (queryInterface) => {
       return queryInterface.bulkInsert(
          "games",
          [
             {
-               title: "God of War Origins Collection",
-               description: "Ação e aventura em um mundo mitológico.",
-               price: 69.90,
+               title: "Death Stranding 2",
+               description: "Ação e aventura em um mundo estranho. Bem a cara do Kojima!",
+               price: 49.90,
                status: "available",
-               yt_link: "https://www.youtube.com/watch?v=1o-tsWL6IAc&pp=ygUlZ29kIG9mIHdhciBvcmlnaW5zIGNvbGxlY3Rpb24gdHJhaWxlcg%3D%3D",
-               capa_jogo: "/tmp/games/god_of_war_origins_collection.jpg",
-               platform_id: 4,
+               yt_link: "eT_A2gPhTIw",
+               capa_jogo: "death_stranding_2_ps4.jpg",
+               platform_id: 5,
                genre_id: 5,
                created_at: new Date(),
                updated_at: new Date(),
             },
             {
-               title: "Gears of War E-Day",
-               description: "Ação e aventura em um mundo invadido por alienígenas.",
-               price: 29.90,
+               title: "Elden Ring",
+               description: "Muitas confusões em um mundo em que uma porrada só pode te matar.",
+               price: 49.90,
                status: "available",
-               yt_link: "https://www.youtube.com/watch?v=EC20gLfUHeA&pp=ygUSZ2VhcnMgb2Ygd2FyIGUtZGF5",
-               capa_jogo: "/tmp/games/gears_of_war_e_day.jpg",
-               platform_id: 2,
+               yt_link: "K_03kFqWfqs",
+               capa_jogo: "elden_ring_ps5.jpg",
+               platform_id: 5,
                genre_id: 7,
                created_at: new Date(),
                updated_at: new Date(),
             },
             {
-               title: "EA FC25",
-               description: "Futebol com gráficos impressionantes e jogabilidade realista.",
-               price: 189.90,
+               title: "Sniper Elite 5",
+               description: "Uma headshot à 5km bem dado e eu dormia mansinho.",
+               price: 49.90,
                status: "available",
-               yt_link: "https://www.youtube.com/watch?v=pBM2xyco_Kg&pp=ygUQdHJhaWxlciBlYSBmYyAyNQ%3D%3D",
-               capa_jogo: "/tmp/games/ea_fc_25.jpg",
-               platform_id: 5,
-               genre_id: 9,
+               yt_link: "K_03kFqWfqs",
+               capa_jogo: "elden_ring_ps5.jpg",
+               platform_id: 4,
+               genre_id: 7,
                created_at: new Date(),
                updated_at: new Date(),
             },
@@ -46,7 +46,7 @@ module.exports = {
       );
    },
 
-   down: (queryInterface, Sequelize) => {
+   down: (queryInterface) => {
       return queryInterface.bulkDelete("games", null, {});
    },
 };
