@@ -14,6 +14,7 @@ class Game extends Model {
             capa_jogo: Sequelize.STRING,
             platform_id: Sequelize.INTEGER,
             genre_id: Sequelize.INTEGER,
+            is_active: Sequelize.BOOLEAN,
          },
          {
             sequelize,

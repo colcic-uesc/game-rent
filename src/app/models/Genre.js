@@ -5,6 +5,7 @@ class Genre extends Model {
       super.init(
          {
             name: Sequelize.STRING,
+            is_active: Sequelize.BOOLEAN,
          },
          {
             sequelize,
