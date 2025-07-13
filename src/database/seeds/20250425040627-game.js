@@ -37,7 +37,7 @@ module.exports = {
           price: 49.9,
           status: "available",
           yt_link: "K_03kFqWfqs",
-          capa_jogo: "elden_ring_ps5.jpg",
+          capa_jogo: "sniper_elite_ps5.jpg",
           platform_id: 4,
           genre_id: 7,
           created_at: new Date(),
