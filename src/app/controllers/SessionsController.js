@@ -47,6 +47,8 @@ class SessionsController {
             id,
             name,
             email,
+            role: tipo,
+            is_active
          },
          token,
       });
