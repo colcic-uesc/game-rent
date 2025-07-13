@@ -54,7 +54,7 @@ routes.get("/", HomeController.index);
 // Auth
 /**
  * @swagger
- * /login:
+ * /api/login:
  *   post:
  *     summary: Cria uma nova sessão de usuário (login)
  *     tags: [Auth]
@@ -80,11 +80,11 @@ routes.get("/", HomeController.index);
  *       400:
  *         description: Credenciais inválidas
  */
-routes.post("/login", SessionsController.create);
+routes.post("/api/login", SessionsController.create);
 
 /**
  * @swagger
- * /signup:
+ * /api/signup:
  *   post:
  *     summary: Cria uma nova conta de usuário (cadastro)
  *     tags: [Auth]
@@ -119,11 +119,11 @@ routes.post("/login", SessionsController.create);
  *       400:
  *         description: Erro de validação ou usuário já existe
  */
-routes.post("/signup", UsersController.store);
+routes.post("/api/signup", UsersController.store);
 
 /**
  * @swagger
- * /logout:
+ * /api/logout:
  *   post:
  *     summary: Encerra a sessão do usuário (logout)
  *     tags: [Auth]
@@ -137,7 +137,7 @@ routes.post("/signup", UsersController.store);
  *       401:
  *         description: Token inválido
  */
-routes.post("/logout", auth, logout);
+routes.post("/api/logout", auth, logout);
 
 // Users
 /**
