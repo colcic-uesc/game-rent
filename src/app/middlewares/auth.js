@@ -25,20 +25,12 @@ export default async (req, res, next) => {
          token,
          process.env.APP_SECRET
       );
-HEAD
 
       req.user = {
          id: decoded.id,
          role: decoded.role,
          active: decoded.active,
       };
-
-      req.user = {
-         id: decoded.id,
-         role: decoded.role,
-         active: decoded.active
-       };
-f99934d (atualizações backend/Aluguéis)
 
       return next();
    } catch (error) {
@@ -47,7 +39,6 @@ f99934d (atualizações backend/Aluguéis)
    }
 };
 
-HEAD
 // Rota de logout
 export const logout = (req, res) => {
    const authHeader = req.headers.authorization;
@@ -94,12 +85,3 @@ export const isClientActive = (req, res, next) => {
    }
    next();
  };
-
- export const isAdmin = (req, res, next) => {
-   const user = req.user;
-   if (!user || user.role !== 'admin') {
-     return res.status(403).json({ error: 'Apenas administradores têm acesso a esta operação.' });
-   }
-   next();
- };
-f99934d (atualizações backend/Aluguéis)
