@@ -5,51 +5,70 @@ import GameRent from "../models/GameRent";
 class RentsController {
    async index(req, res) {
       try {
-         const alugueis = await Rent.findAll({
-            include: [
-               {
-                  model: Game,
-                  as: "jogos",
-                  through: { attributes: [] },
-               },
-            ],
-            order: [["data_aluguel", "DESC"]],
-         });
+          const user = req.user; // Usuário vindo do middleware de autenticação
+          let whereClause = {};
 
-         return res.json(alugueis);
+          // Se o usuário for um cliente, filtramos pelos alugueis dele
+          if (user && user.role === 'cliente') {
+              whereClause = { id_usuario: user.id };
+          }
+          // Se for admin, não adiciona filtro, retorna todos
+
+          const alugueis = await Rent.findAll({
+              where: whereClause, 
+              include: [
+                  {
+                      model: Game,
+                      as: "jogos",
+                      through: { attributes: [] },
+                  },
+              ],
+              order: [["data_aluguel", "DESC"]],
+          });
+
+          return res.json(alugueis);
       } catch (error) {
-         return res.status(500).json({
-            detalhes: error.message,
-         });
+          console.error(error);
+          return res.status(500).json({
+              detalhes: error.message,
+          });
       }
-   }
+  }
 
-   async show(req, res) {
-      const { id } = req.params;
-
-      try {
-         const aluguel = await Rent.findOne({
-            where: { id },
-            include: [
+  async show(req, res) {
+   const { id } = req.params;
+   const user = req.user; // Usuário logado
+   
+   try {
+       const aluguel = await Rent.findOne({
+           where: { id },
+           include: [
                {
-                  model: Game,
-                  as: "jogos",
-                  through: { attributes: [] },
+                   model: Game,
+                   as: "jogos",
+                   through: { attributes: [] },
                },
-            ],
-         });
+           ],
+       });
 
-         if (!aluguel) {
-            return res.status(404).json({
-               error: "Aluguel não encontrado ou não pertence ao usuário",
-            });
-         }
+       if (!aluguel) {
+           return res.status(404).json({
+               error: "Aluguel não encontrado",
+           });
+       }
 
-         return res.json(aluguel);
-      } catch (error) {
-         return res.status(500).json({ detalhes: error.message });
-      }
+       // Se for cliente, garanta que o aluguel pertence a ele
+       if (user && user.role === 'cliente' && aluguel.id_usuario !== user.id) {
+           return res.status(403).json({
+               error: "Acesso negado: Este aluguel não pertence ao usuário logado.",
+           });
+       }
+
+       return res.json(aluguel);
+   } catch (error) {
+       return res.status(500).json({ detalhes: error.message });
    }
+}
 
    async create(req, res) {
       const { jogo_ids, id_usuario } = req.body;

@@ -760,99 +760,6 @@ routes.delete(
    GamesController.destroy
 );
 
-// Rents
-/**
- * @swagger
- * /api/rents:
- *   get:
- *     summary: Lista todos aos alugueis realizados
- *     tags: [Rents]
- *     responses:
- *       200:
- *         description: Lista de alugueis
- *   post:
- *     summary: Registra um novo aluguel
- *     tags: [Rents]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - id_usuario
- *               - jogo_ids
- *             properties:
- *               id_usuario:
- *                 type: number
- *                 example: 1
- *               jogo_ids:
- *                 type: array
- *                 items:
- *                   type: number
- *                 example: [2, 3]
- *     responses:
- *       201:
- *         description: Aluguel registrado com sucesso
- *       400:
- *         description: Erro de validação
- *       500:
- *         description: Erro interno do servidor
- */
-HEAD
-routes.get("/api/rents", auth, isUserActive, RentController.index);
-routes.post("/api/rents", auth, isUserActive, RentController.create);
-
-routes.get("/api/rents", authMiddleware,isAdmin, RentController.index); //apenas admin
-routes.post("/api/rents", authMiddleware,isClientActive, RentController.create); //somente cliente ativo
-f99934d (atualizações backend/Aluguéis)
-
-/**
- * @swagger
- * /api/rents/{id}:
- *   get:
- *     summary: Retorna um registro de aluguel específico
- *     tags: [Rents]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Informações do aluguel
- *       404:
- *         description: Registro de aluguel não encontrado
- *       500:
- *         description: Erro interno do servidor
- *   put:
- *     summary: Atualiza um registro de aluguel
- *     tags: [Rents]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: number
- *     responses:
- *       200:
- *         description: Aluguel atualizado com sucesso
- *       400:
- *         description: Erro na validação dos dados
- *       404:
- *         description: Registro de aluguel não encontrado
- */
-HEAD
-routes.get("/api/rents/:id", auth, isUserActive, RentController.show);
-routes.put(
-   "/api/rents/:id",
-   auth,
-   isUserActive,
-   isAdmin,
-   RentController.update
-);
-
 // Payments
 /**
  * @swagger
@@ -972,8 +879,81 @@ routes.put(
    PaymentsController.update
 );
 
-routes.get("/api/rents/:id", authMiddleware,isAdmin, RentController.show); //apenas admin
-routes.put("/api/rents/:id", authMiddleware,isAdmin, RentController.update); //apenas admin
- f99934d (atualizações backend/Aluguéis)
+// Rents
+/**
+ * @swagger
+ * /api/rents:
+ * get:
+ * summary: Lista todos os aluguéis (para admin) ou os aluguéis do usuário logado (para cliente)
+ * tags: [Rents]
+ * responses:
+ * 200:
+ * description: Lista de aluguéis
+ * post:
+ * summary: Registra um novo aluguel
+ * tags: [Rents]
+ * requestBody:
+ * required: true
+ * content:
+ * application/json:
+ * schema:
+ * type: object
+ * required:
+ * - id_usuario
+ * - jogo_ids
+ * properties:
+ * id_usuario:
+ * type: number
+ * jogo_ids:
+ * type: array
+ * responses:
+ * 201:
+ * description: Aluguel registrado com sucesso
+ * 400:
+ * description: Erro de validação
+ * 500:
+ * description: Erro interno do servidor
+ */
+routes.get("/api/rents", auth, isClientActive, RentController.index); // Agora isClientActive basta
+routes.post("/api/rents", auth, isClientActive, RentController.create);
+
+/**
+ * @swagger
+ * /api/rents/{id}:
+ * get:
+ * summary: Retorna um registro de aluguel específico
+ * tags: [Rents]
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * responses:
+ * 200:
+ * description: Informações do aluguel
+ * 404:
+ * description: Registro de aluguel não encontrado
+ * 500:
+ * description: Erro interno do servidor
+ * put:
+ * summary: Atualiza um registro de aluguel (agora para finalizar)
+ * tags: [Rents]
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: number
+ * responses:
+ * 200:
+ * description: Aluguel atualizado com sucesso
+ * 400:
+ * description: Erro na validação dos dados
+ * 404:
+ * description: Registro de aluguel não encontrado
+ */
+routes.get("/api/rents/:id", auth, isClientActive, RentController.show); 
+routes.patch("/api/rents/:id/finalize", auth, isClientActive, RentController.update); 
 
 export default routes;
