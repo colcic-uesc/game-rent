@@ -3,7 +3,12 @@ import { Router } from "express";
 import multer from "multer";
 import multerConfig from "./config/multer";
 
-import auth, { isUserActive, isAdmin, logout } from "./app/middlewares/auth";
+import auth, {
+  isUserActive,
+  isClientActive,
+  isAdmin,
+  logout,
+} from "./app/middlewares/auth";
 
 import HomeController from "./app/controllers/HomeController";
 import RentController from "./app/controllers/RentController";
@@ -13,7 +18,6 @@ import GenresController from "./app/controllers/GenresController";
 import SessionsController from "./app/controllers/SessionsController";
 import PaymentsController from "./app/controllers/PaymentsController";
 import PlatformsController from "./app/controllers/PlatformsController";
-import authMiddleware, { isClientActive, isAdmin } from './app/middlewares/auth';
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -304,11 +308,11 @@ routes.delete("/api/users/:id", auth, isUserActive, UsersController.destroy);
  *         description: Erro interno do servidor
  */
 routes.put(
-   "/api/users/:id/activate",
-   auth,
-   isUserActive,
-   isAdmin,
-   UsersController.activate
+  "/api/users/:id/activate",
+  auth,
+  isUserActive,
+  isAdmin,
+  UsersController.activate
 );
 
 /**
@@ -330,10 +334,10 @@ routes.put(
  *         description: Usuário ou histórico não encontrado
  */
 routes.get(
-   "/api/users/:id/history",
-   auth,
-   isUserActive,
-   UsersController.history
+  "/api/users/:id/history",
+  auth,
+  isUserActive,
+  UsersController.history
 );
 
 // Platforms
@@ -368,18 +372,18 @@ routes.get(
  *         description: Erro de validação ou plataforma já existe
  */
 routes.get(
-   "/api/platforms",
-   auth,
-   isUserActive,
-   isAdmin,
-   PlatformsController.index
+  "/api/platforms",
+  auth,
+  isUserActive,
+  isAdmin,
+  PlatformsController.index
 );
 routes.post(
-   "/api/platforms",
-   auth,
-   isUserActive,
-   isAdmin,
-   PlatformsController.create
+  "/api/platforms",
+  auth,
+  isUserActive,
+  isAdmin,
+  PlatformsController.create
 );
 
 /**
@@ -443,25 +447,25 @@ routes.post(
  *         description: Plataforma não encontrada
  */
 routes.get(
-   "/api/platforms/:id",
-   auth,
-   isUserActive,
-   isAdmin,
-   PlatformsController.show
+  "/api/platforms/:id",
+  auth,
+  isUserActive,
+  isAdmin,
+  PlatformsController.show
 );
 routes.put(
-   "/api/platforms/:id",
-   auth,
-   isUserActive,
-   isAdmin,
-   PlatformsController.update
+  "/api/platforms/:id",
+  auth,
+  isUserActive,
+  isAdmin,
+  PlatformsController.update
 );
 routes.delete(
-   "/api/platforms/:id",
-   auth,
-   isUserActive,
-   isAdmin,
-   PlatformsController.destroy
+  "/api/platforms/:id",
+  auth,
+  isUserActive,
+  isAdmin,
+  PlatformsController.destroy
 );
 
 // Genres
@@ -497,11 +501,11 @@ routes.delete(
  */
 routes.get("/api/genres", auth, isUserActive, isAdmin, GenresController.index);
 routes.post(
-   "/api/genres",
-   auth,
-   isUserActive,
-   isAdmin,
-   GenresController.create
+  "/api/genres",
+  auth,
+  isUserActive,
+  isAdmin,
+  GenresController.create
 );
 
 /**
@@ -565,25 +569,25 @@ routes.post(
  *          description: Gênero não encontrado
  */
 routes.get(
-   "/api/genres/:id",
-   auth,
-   isUserActive,
-   isAdmin,
-   GenresController.show
+  "/api/genres/:id",
+  auth,
+  isUserActive,
+  isAdmin,
+  GenresController.show
 );
 routes.put(
-   "/api/genres/:id",
-   auth,
-   isUserActive,
-   isAdmin,
-   GenresController.update
+  "/api/genres/:id",
+  auth,
+  isUserActive,
+  isAdmin,
+  GenresController.update
 );
 routes.delete(
-   "/api/genres/:id",
-   auth,
-   isUserActive,
-   isAdmin,
-   GenresController.destroy
+  "/api/genres/:id",
+  auth,
+  isUserActive,
+  isAdmin,
+  GenresController.destroy
 );
 
 // Games
@@ -647,12 +651,12 @@ routes.delete(
  */
 routes.get("/api/games", auth, isUserActive, GamesController.index);
 routes.post(
-   "/api/games",
-   auth,
-   isUserActive,
-   isAdmin,
-   upload.single("capa_jogo"),
-   GamesController.create
+  "/api/games",
+  auth,
+  isUserActive,
+  isAdmin,
+  upload.single("capa_jogo"),
+  GamesController.create
 );
 
 /**
@@ -745,19 +749,19 @@ routes.post(
  */
 routes.get("/api/games/:id", auth, isUserActive, GamesController.show);
 routes.put(
-   "/api/games/:id",
-   upload.single("capa_jogo"),
-   auth,
-   isUserActive,
-   isAdmin,
-   GamesController.update
+  "/api/games/:id",
+  upload.single("capa_jogo"),
+  auth,
+  isUserActive,
+  isAdmin,
+  GamesController.update
 );
 routes.delete(
-   "/api/games/:id",
-   auth,
-   isUserActive,
-   isAdmin,
-   GamesController.destroy
+  "/api/games/:id",
+  auth,
+  isUserActive,
+  isAdmin,
+  GamesController.destroy
 );
 
 // Payments
@@ -773,11 +777,11 @@ routes.delete(
  *
  */
 routes.get(
-   "/api/payments",
-   auth,
-   isUserActive,
-   isAdmin,
-   PaymentsController.index
+  "/api/payments",
+  auth,
+  isUserActive,
+  isAdmin,
+  PaymentsController.index
 );
 
 /**
@@ -872,88 +876,93 @@ routes.get("/api/payments/:id", auth, isUserActive, PaymentsController.show);
  *         description: Erro ao enviar e-mail
  */
 routes.put(
-   "/api/payments/:paymentId/pay",
-   auth,
-   isUserActive,
-   isAdmin,
-   PaymentsController.update
+  "/api/payments/:paymentId/pay",
+  auth,
+  isUserActive,
+  isAdmin,
+  PaymentsController.update
 );
 
 // Rents
 /**
  * @swagger
  * /api/rents:
- * get:
- * summary: Lista todos os aluguéis (para admin) ou os aluguéis do usuário logado (para cliente)
- * tags: [Rents]
- * responses:
- * 200:
- * description: Lista de aluguéis
- * post:
- * summary: Registra um novo aluguel
- * tags: [Rents]
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * type: object
- * required:
- * - id_usuario
- * - jogo_ids
- * properties:
- * id_usuario:
- * type: number
- * jogo_ids:
- * type: array
- * responses:
- * 201:
- * description: Aluguel registrado com sucesso
- * 400:
- * description: Erro de validação
- * 500:
- * description: Erro interno do servidor
+ *   get:
+ *     summary: Lista todos os aluguéis (para admin) ou os aluguéis do usuário logado (para cliente)
+ *     tags: [Rents]
+ *     responses:
+ *       200:
+ *         description: Lista de aluguéis
+ *   post:
+ *      summary: Registra um novo aluguel
+ *      tags: [Rents]
+ *      requestBody:
+ *         required: true
+ *         content:
+ *             application/json:
+ *                schema:
+ *                type: object
+ *                required:
+ *                   - id_usuario
+ *                   - jogo_ids
+ *                properties:
+ *                   id_usuario:
+ *                      type: number
+ *                   jogo_ids:
+ *                      type: array
+ *      responses:
+ *        201:
+ *          description: Aluguel registrado com sucesso
+ *        400:
+ *          description: Erro de validação
+ *        500:
+ *          description: Erro interno do servidor
  */
-routes.get("/api/rents", auth, isClientActive, RentController.index); // Agora isClientActive basta
-routes.post("/api/rents", auth, isClientActive, RentController.create);
+routes.get("/api/rents", auth, isUserActive, RentController.index);
+routes.post("/api/rents", auth, isUserActive, RentController.create);
 
 /**
  * @swagger
  * /api/rents/{id}:
- * get:
- * summary: Retorna um registro de aluguel específico
- * tags: [Rents]
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * responses:
- * 200:
- * description: Informações do aluguel
- * 404:
- * description: Registro de aluguel não encontrado
- * 500:
- * description: Erro interno do servidor
- * put:
- * summary: Atualiza um registro de aluguel (agora para finalizar)
- * tags: [Rents]
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: number
- * responses:
- * 200:
- * description: Aluguel atualizado com sucesso
- * 400:
- * description: Erro na validação dos dados
- * 404:
- * description: Registro de aluguel não encontrado
+ *    get:
+ *       summary: Retorna um registro de aluguel específico
+ *       tags: [Rents]
+ *       parameters:
+ *          - in: path
+ *            name: id
+ *            required: true
+ *            schema:
+ *              type: string
+ *       responses:
+ *         200:
+ *           description: Informações do aluguel
+ *         404:
+ *           description: Registro de aluguel não encontrado
+ *         500:
+ *           description: Erro interno do servidor
+ *    put:
+ *       summary: Atualiza um registro de aluguel (agora para finalizar)
+ *       tags: [Rents]
+ *       parameters:
+ *          - in: path
+ *            name: id
+ *            required: true
+ *            schema:
+ *              type: number
+ *       responses:
+ *         200:
+ *           description: Aluguel atualizado com sucesso
+ *         400:
+ *           description: Erro na validação dos dados
+ *         404:
+ *           description: Registro de aluguel não encontrado
  */
-routes.get("/api/rents/:id", auth, isClientActive, RentController.show); 
-routes.patch("/api/rents/:id/finalize", auth, isClientActive, RentController.update); 
+routes.get("/api/rents/:id", auth, isUserActive, RentController.show);
+routes.patch(
+  "/api/rents/:id/finalize",
+  auth,
+  isUserActive,
+  RentController.update
+);
 
 export default routes;
