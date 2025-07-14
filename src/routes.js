@@ -798,7 +798,7 @@ routes.delete(
  *       500:
  *         description: Erro interno do servidor
  */
-routes.get("/api/rents", auth, isUserActive, isAdmin, RentController.index);
+routes.get("/api/rents", auth, isUserActive, RentController.index);
 routes.post("/api/rents", auth, isUserActive, RentController.create);
 
 /**
