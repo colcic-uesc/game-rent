@@ -13,6 +13,7 @@ import GenresController from "./app/controllers/GenresController";
 import SessionsController from "./app/controllers/SessionsController";
 import PaymentsController from "./app/controllers/PaymentsController";
 import PlatformsController from "./app/controllers/PlatformsController";
+import authMiddleware, { isClientActive, isAdmin } from './app/middlewares/auth';
 
 const routes = Router();
 const upload = multer(multerConfig);
@@ -798,8 +799,13 @@ routes.delete(
  *       500:
  *         description: Erro interno do servidor
  */
+HEAD
 routes.get("/api/rents", auth, isUserActive, RentController.index);
 routes.post("/api/rents", auth, isUserActive, RentController.create);
+
+routes.get("/api/rents", authMiddleware,isAdmin, RentController.index); //apenas admin
+routes.post("/api/rents", authMiddleware,isClientActive, RentController.create); //somente cliente ativo
+f99934d (atualizações backend/Aluguéis)
 
 /**
  * @swagger
@@ -837,6 +843,7 @@ routes.post("/api/rents", auth, isUserActive, RentController.create);
  *       404:
  *         description: Registro de aluguel não encontrado
  */
+HEAD
 routes.get("/api/rents/:id", auth, isUserActive, RentController.show);
 routes.put(
    "/api/rents/:id",
@@ -964,5 +971,9 @@ routes.put(
    isAdmin,
    PaymentsController.update
 );
+
+routes.get("/api/rents/:id", authMiddleware,isAdmin, RentController.show); //apenas admin
+routes.put("/api/rents/:id", authMiddleware,isAdmin, RentController.update); //apenas admin
+ f99934d (atualizações backend/Aluguéis)
 
 export default routes;

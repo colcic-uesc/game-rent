@@ -25,12 +25,20 @@ export default async (req, res, next) => {
          token,
          process.env.APP_SECRET
       );
+HEAD
 
       req.user = {
          id: decoded.id,
          role: decoded.role,
          active: decoded.active,
       };
+
+      req.user = {
+         id: decoded.id,
+         role: decoded.role,
+         active: decoded.active
+       };
+f99934d (atualizações backend/Aluguéis)
 
       return next();
    } catch (error) {
@@ -39,6 +47,7 @@ export default async (req, res, next) => {
    }
 };
 
+HEAD
 // Rota de logout
 export const logout = (req, res) => {
    const authHeader = req.headers.authorization;
@@ -77,3 +86,20 @@ export const isAdmin = (req, res, next) => {
 
    next();
 };
+
+export const isClientActive = (req, res, next) => {
+   const user = req.user;
+   if (!user || user.role !== 'cliente' || !user.active) {
+     return res.status(403).json({ error: 'Apenas clientes ativos podem registrar aluguéis.' });
+   }
+   next();
+ };
+
+ export const isAdmin = (req, res, next) => {
+   const user = req.user;
+   if (!user || user.role !== 'admin') {
+     return res.status(403).json({ error: 'Apenas administradores têm acesso a esta operação.' });
+   }
+   next();
+ };
+f99934d (atualizações backend/Aluguéis)
