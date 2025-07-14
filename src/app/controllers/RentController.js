@@ -57,7 +57,7 @@ class RentsController {
            });
        }
 
-       // Se for cliente, garanta que o aluguel pertence a ele
+       // Se for cliente, garantimos que o aluguel pertence a ele
        if (user && user.role === 'cliente' && aluguel.id_usuario !== user.id) {
            return res.status(403).json({
                error: "Acesso negado: Este aluguel não pertence ao usuário logado.",
