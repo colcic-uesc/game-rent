@@ -3,12 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import multerConfig from "./config/multer";
 
-import auth, {
-  isUserActive,
-  isClientActive,
-  isAdmin,
-  logout,
-} from "./app/middlewares/auth";
+import auth, { isUserActive, isAdmin, logout } from "./app/middlewares/auth";
 
 import HomeController from "./app/controllers/HomeController";
 import RentController from "./app/controllers/RentController";
